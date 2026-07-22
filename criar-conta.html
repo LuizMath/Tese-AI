@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Criar conta — Tese AI</title>
+<meta name="description" content="Crie sua conta na Tese AI e comece o teste de 7 dias.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-900:#060D1A; --navy-800:#081221; --navy-700:#0A1526; --navy-600:#0C1930; --navy-500:#0E1D33;
+    --gold:#C2A166; --gold-hi:#D4B87E; --gold-soft:#D3B57C; --gold-ink:#9A7A3A; --gold-line:#B98A44;
+    --cream:#F6F3EC; --card:#FCFBF7;
+    --ink:#16273F; --ink-2:#2C3E58; --ink-3:#45566E; --ink-4:#52627A; --ink-5:#8290A3;
+    --on-dark:#F6F3EC; --on-dark-2:#B9C4D4; --on-dark-3:#8A97AB; --on-dark-4:#7E8CA0;
+    --danger:#B4442F; --ok:#3E7A5E;
+    --mono:'IBM Plex Mono',ui-monospace,monospace;
+    --serif:'Newsreader',Georgia,serif;
+    --sans:'Public Sans',-apple-system,'Segoe UI',sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--cream);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  ::selection{background:var(--gold);color:#0A1524}
+  a{color:var(--gold-ink)}
+  :focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:3px}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+  .shell{min-height:100vh;min-height:100dvh;display:grid;grid-template-columns:1.02fr 1fr}
+
+  /* ---------- painel de marca ---------- */
+  .brandside{
+    background:linear-gradient(180deg,var(--navy-600) 0%,var(--navy-700) 55%,var(--navy-800) 100%);
+    color:var(--on-dark);border-right:1px solid rgba(203,173,114,.18);
+    padding:clamp(32px,4vw,52px) clamp(28px,4.5vw,64px);
+    display:flex;flex-direction:column;justify-content:space-between;gap:40px
+  }
+  .logo{display:inline-flex;align-items:center;gap:10px;color:var(--on-dark);text-decoration:none;width:fit-content}
+  .logo-bars{display:flex;align-items:flex-end;gap:2.5px;height:18px}
+  .logo-bars i{width:4px;background:var(--gold);border-radius:1px;display:block}
+  .logo-bars i:nth-child(1){height:9px}
+  .logo-bars i:nth-child(2){height:18px}
+  .logo-bars i:nth-child(3){height:13px}
+  .logo-name{font-family:var(--serif);font-size:22px;font-weight:600;letter-spacing:.01em}
+  .logo-name span{color:var(--gold)}
+  .eyebrow{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#C9AC6F}
+  .eyebrow::before{content:"";width:28px;height:1px;background:var(--gold)}
+  .brand-copy h1{font-family:var(--serif);font-weight:500;font-size:clamp(30px,3.1vw,42px);line-height:1.1;letter-spacing:-.01em;margin:20px 0 16px;text-wrap:balance}
+  .brand-copy h1 em{font-style:normal;color:var(--gold-soft)}
+  .brand-copy p{font-size:16px;line-height:1.65;color:var(--on-dark-2);margin:0;max-width:46ch;text-wrap:pretty}
+  .passos{margin-top:clamp(28px,3.5vw,40px);display:flex;flex-direction:column;max-width:430px;animation:fadeUp .7s .1s ease-out both}
+  .passo{display:grid;grid-template-columns:34px 1fr;gap:14px;padding:16px 0;border-top:1px solid rgba(246,243,236,.1)}
+  .passo:last-child{border-bottom:1px solid rgba(246,243,236,.1)}
+  .passo b{font-family:var(--serif);font-size:20px;font-weight:500;color:var(--gold-soft);line-height:1.2}
+  .passo .t{font-size:14.5px;color:#DDE4EC;line-height:1.45}
+  .passo .d{font-size:12.5px;color:var(--on-dark-4);margin-top:3px;line-height:1.5}
+  .brand-foot{font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;color:var(--on-dark-4);line-height:1.9}
+
+  /* ---------- formulário ---------- */
+  .formside{display:flex;flex-direction:column;padding:clamp(28px,4vw,52px) clamp(20px,5vw,56px)}
+  .formside-top{display:flex;justify-content:flex-end;font-size:13.5px;color:var(--ink-4)}
+  .formside-top a{color:var(--gold-ink);font-weight:600;text-decoration:none}
+  .formside-top a:hover{color:var(--gold-line)}
+  .formwrap{flex:1;display:flex;align-items:center;justify-content:center;padding:clamp(24px,3vw,40px) 0}
+  .form{width:100%;max-width:430px}
+  .form-eyebrow{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-ink)}
+  .form-eyebrow::before{content:"";width:26px;height:1px;background:var(--gold-line)}
+  .form h2{font-family:var(--serif);font-weight:500;font-size:clamp(28px,3.2vw,36px);line-height:1.16;letter-spacing:-.01em;margin:16px 0 8px}
+  .form .sub{font-size:15px;line-height:1.6;color:var(--ink-4);margin:0 0 26px}
+
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:13px;font-weight:600;color:var(--ink-2);margin-bottom:7px}
+  .opcional{font-weight:400;color:var(--ink-5);font-size:12px}
+  .control{position:relative;display:flex;align-items:center}
+  input[type=text],input[type=email],input[type=password],select{
+    width:100%;font-family:inherit;font-size:15px;color:var(--ink);background:var(--card);
+    border:1px solid rgba(19,35,58,.22);border-radius:6px;padding:13px 14px;transition:border-color .2s,box-shadow .2s
+  }
+  select{cursor:pointer}
+  input::placeholder{color:#9AA6B7}
+  input:hover,select:hover{border-color:rgba(19,35,58,.34)}
+  input:focus,select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(194,161,102,.22)}
+  input[aria-invalid=true]{border-color:var(--danger);box-shadow:0 0 0 3px rgba(180,68,47,.14)}
+  .control.has-toggle input{padding-right:74px}
+  .toggle{position:absolute;right:8px;background:none;border:none;cursor:pointer;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-5);padding:6px;border-radius:4px;transition:color .2s}
+  .toggle:hover{color:var(--gold-ink)}
+  .err{display:block;font-size:12.5px;color:var(--danger);margin-top:6px}
+  .err:empty{display:none}
+  .dica{font-size:12.5px;color:var(--ink-5);margin-top:6px}
+
+  .dupla{display:grid;grid-template-columns:96px 1fr;gap:10px}
+
+  /* força da senha */
+  .forca{display:flex;gap:5px;margin-top:8px}
+  .forca i{flex:1;height:4px;border-radius:99px;background:rgba(19,35,58,.12);display:block;transition:background .25s}
+  .forca-txt{font-size:12px;margin-top:6px;color:var(--ink-5)}
+
+  /* planos */
+  .planos{display:flex;flex-direction:column;gap:8px;margin:4px 0 20px}
+  .plano{
+    display:flex;align-items:center;gap:12px;border:1px solid rgba(19,35,58,.2);border-radius:8px;
+    padding:13px 15px;cursor:pointer;background:var(--card);transition:border-color .2s,background .2s
+  }
+  .plano:hover{border-color:rgba(178,138,68,.55)}
+  .plano input{width:16px;height:16px;accent-color:var(--gold);margin:0;flex-shrink:0;cursor:pointer}
+  .plano-info{flex:1;min-width:0}
+  .plano-nome{font-size:14.5px;font-weight:600;color:var(--ink-2)}
+  .plano-desc{font-size:12.5px;color:var(--ink-5);margin-top:2px}
+  .plano-preco{font-family:var(--mono);font-size:13px;color:var(--gold-ink);white-space:nowrap}
+  .plano:has(input:checked){border-color:var(--gold);background:rgba(194,161,102,.07);box-shadow:0 0 0 1px var(--gold)}
+
+  .aceite{display:flex;align-items:flex-start;gap:10px;font-size:13.5px;color:var(--ink-3);line-height:1.5;cursor:pointer;margin:4px 0 22px}
+  .aceite input{width:16px;height:16px;accent-color:var(--gold);margin:2px 0 0;flex-shrink:0;cursor:pointer}
+  .aceite a{color:var(--gold-ink);font-weight:600;text-decoration:none}
+  .aceite a:hover{color:var(--gold-line)}
+
+  .btn{width:100%;font-family:inherit;font-weight:600;font-size:15px;padding:14px 18px;border-radius:6px;cursor:pointer;border:none;display:inline-flex;align-items:center;justify-content:center;gap:10px;transition:background .2s,border-color .2s,transform .2s}
+  .btn-primary{background:var(--gold);color:#0A1524}
+  .btn-primary:hover:not(:disabled){background:var(--gold-hi);transform:translateY(-1px)}
+  .btn-primary:disabled{opacity:.62;cursor:progress;transform:none}
+  .btn-ghost{background:none;border:1px solid rgba(19,35,58,.28);color:var(--ink)}
+  .btn-ghost:hover{border-color:var(--ink);background:rgba(19,35,58,.04)}
+  .spinner{width:15px;height:15px;border:2px solid rgba(10,21,36,.28);border-top-color:#0A1524;border-radius:50%;animation:spin .7s linear infinite}
+
+  .divider{display:flex;align-items:center;gap:14px;margin:22px 0;font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-5)}
+  .divider::before,.divider::after{content:"";flex:1;height:1px;background:rgba(19,35,58,.13)}
+
+  .alert{display:none;align-items:flex-start;gap:10px;font-size:13.5px;line-height:1.55;border-radius:6px;padding:12px 14px;margin-bottom:20px}
+  .alert.show{display:flex}
+  .alert-error{background:rgba(180,68,47,.08);border:1px solid rgba(180,68,47,.3);color:#8E3524}
+
+  .switch-note{font-size:14px;color:var(--ink-4);text-align:center;margin:22px 0 0}
+  .switch-note a{color:var(--gold-ink);font-weight:600;text-decoration:none}
+  .switch-note a:hover{color:var(--gold-line)}
+  .formside-foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;font-size:12px;color:var(--ink-5);padding-top:20px;border-top:1px solid rgba(19,35,58,.1)}
+  .formside-foot a{color:var(--ink-5);text-decoration:none}
+  .formside-foot a:hover{color:var(--ink-3)}
+
+  @media (max-width:980px){
+    .shell{grid-template-columns:1fr}
+    .brandside{border-right:none;border-bottom:1px solid rgba(203,173,114,.18);padding:22px clamp(20px,5vw,40px) 30px;gap:24px}
+    .brand-copy h1{font-size:clamp(26px,6vw,32px);margin:16px 0 12px}
+    .brand-copy p{font-size:15px}
+    .passos,.brand-foot{display:none}
+    .formside{padding:8px clamp(20px,5vw,40px) 28px}
+    .formwrap{padding:24px 0 32px;align-items:flex-start}
+    .formside-top{padding-top:18px}
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <aside class="brandside">
+    <a class="logo" href="index.html">
+      <span class="logo-bars"><i></i><i></i><i></i></span>
+      <span class="logo-name">Tese <span>AI</span></span>
+    </a>
+
+    <div class="brand-copy">
+      <div class="eyebrow">Teste de 7 dias</div>
+      <h1>Sua conta em um minuto.<br><em>Os padrões, logo depois.</em></h1>
+      <p>Crie a conta, escolha sua área e veja como os juízos das suas ações vêm decidindo demandas semelhantes.</p>
+
+      <div class="passos" aria-hidden="true">
+        <div class="passo">
+          <b>01</b>
+          <div>
+            <div class="t">Crie a conta</div>
+            <div class="d">Sem cartão de crédito. Cancele quando quiser.</div>
+          </div>
+        </div>
+        <div class="passo">
+          <b>02</b>
+          <div>
+            <div class="t">Escolha sua área do direito</div>
+            <div class="d">A análise é calibrada para as demandas típicas de cada área.</div>
+          </div>
+        </div>
+        <div class="passo">
+          <b>03</b>
+          <div>
+            <div class="t">Importe seus processos</div>
+            <div class="d">Pelo número CNJ. A IA organiza vara, fase, prazos e o padrão do julgador.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="brand-foot">
+      Dados públicos&nbsp;&nbsp;·&nbsp;&nbsp;Conformidade com a LGPD<br>
+      Criptografia em trânsito e em repouso
+    </div>
+  </aside>
+
+  <main class="formside">
+    <div class="formside-top">
+      <span>Já tem conta?&nbsp;<a href="login.html">Entrar</a></span>
+    </div>
+
+    <div class="formwrap">
+      <div class="form">
+        <div class="form-eyebrow">Criar conta</div>
+        <h2>Comece seu teste</h2>
+        <p class="sub">7 dias em qualquer plano, sem cartão de crédito.</p>
+
+        <div class="alert alert-error" id="alerta" role="alert"></div>
+
+        <form id="form-conta" novalidate>
+          <div class="field">
+            <label for="nome">Nome completo</label>
+            <div class="control">
+              <input id="nome" name="nome" type="text" autocomplete="name" placeholder="Ana Ferraz" aria-describedby="erro-nome" required>
+            </div>
+            <span class="err" id="erro-nome" aria-live="polite"></span>
+          </div>
+
+          <div class="field">
+            <label for="email">E-mail profissional</label>
+            <div class="control">
+              <input id="email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="voce@escritorio.com.br" aria-describedby="erro-email" required>
+            </div>
+            <span class="err" id="erro-email" aria-live="polite"></span>
+          </div>
+
+          <div class="field">
+            <label for="oab-num">Inscrição na OAB <span class="opcional">— opcional</span></label>
+            <div class="dupla">
+              <select id="oab-uf" aria-label="Estado da inscrição na OAB">
+                <option>SP</option><option>RJ</option><option>MG</option><option>RS</option><option>PR</option>
+                <option>SC</option><option>BA</option><option>PE</option><option>CE</option><option>DF</option>
+                <option>GO</option><option>ES</option><option>PA</option><option>AM</option><option>MT</option>
+                <option>MS</option><option>PB</option><option>RN</option><option>AL</option><option>SE</option>
+                <option>PI</option><option>MA</option><option>TO</option><option>RO</option><option>AC</option>
+                <option>AP</option><option>RR</option>
+              </select>
+              <input id="oab-num" name="oab" type="text" inputmode="numeric" placeholder="214.556" aria-describedby="erro-oab">
+            </div>
+            <span class="err" id="erro-oab" aria-live="polite"></span>
+          </div>
+
+          <div class="field">
+            <label for="area">Área principal de atuação</label>
+            <select id="area" name="area">
+              <option>Consumidor</option>
+              <option>Cível</option>
+              <option>Trabalhista</option>
+              <option>Tributário</option>
+              <option>Previdenciário</option>
+              <option>Família</option>
+              <option>Empresarial</option>
+              <option>Penal</option>
+            </select>
+            <div class="dica">Dá para trocar depois, sem perder dados.</div>
+          </div>
+
+          <div class="field">
+            <label for="senha">Senha</label>
+            <div class="control has-toggle">
+              <input id="senha" name="senha" type="password" autocomplete="new-password" placeholder="Mínimo de 8 caracteres" aria-describedby="erro-senha forca-txt" required>
+              <button type="button" class="toggle" id="btn-ver-senha" aria-label="Mostrar senha">Mostrar</button>
+            </div>
+            <div class="forca" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+            <div class="forca-txt" id="forca-txt" aria-live="polite">Use ao menos 8 caracteres, com letras e números.</div>
+            <span class="err" id="erro-senha" aria-live="polite"></span>
+          </div>
+
+          <div class="field">
+            <label for="senha2">Confirmar senha</label>
+            <div class="control">
+              <input id="senha2" name="senha2" type="password" autocomplete="new-password" placeholder="Repita a senha" aria-describedby="erro-senha2" required>
+            </div>
+            <span class="err" id="erro-senha2" aria-live="polite"></span>
+          </div>
+
+          <div class="field">
+            <label id="rotulo-plano">Plano para o teste</label>
+            <div class="planos" role="radiogroup" aria-labelledby="rotulo-plano">
+              <label class="plano">
+                <input type="radio" name="plano" value="basico">
+                <span class="plano-info">
+                  <span class="plano-nome">Básico</span>
+                  <span class="plano-desc">1 área · 60 consultas por mês</span>
+                </span>
+                <span class="plano-preco">R$ 109/mês</span>
+              </label>
+              <label class="plano">
+                <input type="radio" name="plano" value="intermediario" checked>
+                <span class="plano-info">
+                  <span class="plano-nome">Intermediário</span>
+                  <span class="plano-desc">3 áreas · 200 consultas por mês</span>
+                </span>
+                <span class="plano-preco">R$ 149/mês</span>
+              </label>
+              <label class="plano">
+                <input type="radio" name="plano" value="avancado">
+                <span class="plano-info">
+                  <span class="plano-nome">Avançado</span>
+                  <span class="plano-desc">Todas as áreas · consultas ilimitadas</span>
+                </span>
+                <span class="plano-preco">R$ 199/mês</span>
+              </label>
+            </div>
+          </div>
+
+          <label class="aceite">
+            <input type="checkbox" id="aceite" required>
+            <span>Li e aceito os <a href="#">Termos de uso</a> e a <a href="#">Política de privacidade</a>. A Tese AI analisa decisões públicas e não presta consultoria jurídica.</span>
+          </label>
+          <span class="err" id="erro-aceite" style="margin:-16px 0 18px" aria-live="polite"></span>
+
+          <button type="submit" class="btn btn-primary" id="btn-criar">Criar conta e começar o teste</button>
+
+          <div class="divider">ou</div>
+
+          <button type="button" class="btn btn-ghost" id="btn-google">
+            <svg width="17" height="17" viewBox="0 0 48 48" aria-hidden="true">
+              <path fill="#4285F4" d="M45.1 24.5c0-1.6-.1-3.2-.4-4.7H24v8.9h11.8c-.5 2.8-2 5.1-4.4 6.7v5.5h7.1c4.2-3.8 6.6-9.5 6.6-16.4z"/>
+              <path fill="#34A853" d="M24 46c5.9 0 10.9-2 14.5-5.3l-7.1-5.5c-2 1.3-4.5 2.1-7.4 2.1-5.7 0-10.6-3.8-12.3-9H4.4v5.7C8 41.3 15.4 46 24 46z"/>
+              <path fill="#FBBC05" d="M11.7 28.3c-.4-1.3-.7-2.7-.7-4.3s.3-3 .7-4.3v-5.7H4.4A22 22 0 0 0 2 24c0 3.6.9 6.9 2.4 9.9l7.3-5.6z"/>
+              <path fill="#EA4335" d="M24 10.6c3.2 0 6.1 1.1 8.4 3.3l6.3-6.3C34.9 4.1 29.9 2 24 2 15.4 2 8 6.7 4.4 13.7l7.3 5.7c1.7-5.2 6.6-8.8 12.3-8.8z"/>
+            </svg>
+            Criar conta com Google
+          </button>
+
+          <p class="switch-note">Já é cliente? <a href="login.html">Entrar no painel</a></p>
+        </form>
+      </div>
+    </div>
+
+    <div class="formside-foot">
+      <span>© 2026 Tese AI Tecnologia Ltda.</span>
+      <span><a href="#">Termos de uso</a> · <a href="#">Privacidade</a> · <a href="mailto:contato@teseai.com.br">Suporte</a></span>
+    </div>
+  </main>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  // Sem backend ainda: MODO_DEMO mantém o fluxo navegável até o painel.
+  // Com a API pronta: MODO_DEMO = false e implemente criarConta().
+  var MODO_DEMO = true;
+
+  var $ = function(id){ return document.getElementById(id); };
+
+  var form = $('form-conta');
+  var nome = $('nome'), email = $('email'), oab = $('oab-num');
+  var senha = $('senha'), senha2 = $('senha2'), aceite = $('aceite');
+  var alerta = $('alerta'), btn = $('btn-criar');
+  var barras = document.querySelectorAll('.forca i');
+
+  /* ---------- utilidades ---------- */
+  function marcar(input, span, msg){
+    if (input) input.setAttribute('aria-invalid', msg ? 'true' : 'false');
+    span.textContent = msg || '';
+    return !msg;
+  }
+  function mostrarAlerta(msg){
+    alerta.textContent = msg;
+    alerta.classList.toggle('show', !!msg);
+  }
+  function carregando(ativo){
+    btn.disabled = ativo;
+    btn.innerHTML = ativo ? '<span class="spinner"></span>Criando sua conta…' : 'Criar conta e começar o teste';
+  }
+  function planoEscolhido(){
+    var r = form.querySelector('input[name=plano]:checked');
+    return r ? r.value : 'intermediario';
+  }
+
+  /* ---------- plano vindo da landing (?plano=) ---------- */
+  try {
+    var p = new URLSearchParams(window.location.search).get('plano');
+    var alvo = p && form.querySelector('input[name=plano][value="' + p.replace(/[^a-z]/gi, '') + '"]');
+    if (alvo) alvo.checked = true;
+  } catch (e) { /* segue com o plano padrão */ }
+
+  /* ---------- validação ---------- */
+  var RE_EMAIL = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
+
+  function validarNome(){
+    var v = nome.value.trim();
+    if (!v) return marcar(nome, $('erro-nome'), 'Informe seu nome.');
+    if (v.split(/\s+/).length < 2) return marcar(nome, $('erro-nome'), 'Informe nome e sobrenome.');
+    return marcar(nome, $('erro-nome'), '');
+  }
+  function validarEmail(){
+    var v = email.value.trim();
+    if (!v) return marcar(email, $('erro-email'), 'Informe seu e-mail.');
+    if (!RE_EMAIL.test(v)) return marcar(email, $('erro-email'), 'E-mail inválido. Verifique o endereço digitado.');
+    return marcar(email, $('erro-email'), '');
+  }
+  function validarOab(){
+    var v = oab.value.replace(/\D/g, '');
+    if (!v) return marcar(oab, $('erro-oab'), '');           // campo opcional
+    if (v.length < 4 || v.length > 7) return marcar(oab, $('erro-oab'), 'Número de inscrição inválido.');
+    return marcar(oab, $('erro-oab'), '');
+  }
+  function forcaSenha(v){
+    var pontos = 0;
+    if (v.length >= 8) pontos++;
+    if (v.length >= 12) pontos++;
+    if (/[a-zA-Z]/.test(v) && /\d/.test(v)) pontos++;
+    if (/[^a-zA-Z0-9]/.test(v)) pontos++;
+    return Math.min(pontos, 4);
+  }
+  function pintarForca(){
+    var v = senha.value;
+    var n = v ? Math.max(forcaSenha(v), 1) : 0;
+    var cores = ['#B4442F', '#B4442F', '#8F6A2A', '#3E7A5E', '#3E7A5E'];
+    var textos = [
+      'Use ao menos 8 caracteres, com letras e números.',
+      'Senha fraca — muito curta.',
+      'Senha razoável — misture letras e números.',
+      'Senha boa.',
+      'Senha forte.'
+    ];
+    Array.prototype.forEach.call(barras, function(b, i){
+      b.style.background = i < n ? cores[n] : 'rgba(19,35,58,.12)';
+    });
+    $('forca-txt').textContent = textos[n];
+    $('forca-txt').style.color = n >= 3 ? '#3E7A5E' : 'var(--ink-5)';
+  }
+  function validarSenha(){
+    if (!senha.value) return marcar(senha, $('erro-senha'), 'Crie uma senha.');
+    if (senha.value.length < 8) return marcar(senha, $('erro-senha'), 'A senha precisa de no mínimo 8 caracteres.');
+    if (!/[a-zA-Z]/.test(senha.value) || !/\d/.test(senha.value)) return marcar(senha, $('erro-senha'), 'Combine letras e números.');
+    return marcar(senha, $('erro-senha'), '');
+  }
+  function validarSenha2(){
+    if (!senha2.value) return marcar(senha2, $('erro-senha2'), 'Repita a senha.');
+    if (senha2.value !== senha.value) return marcar(senha2, $('erro-senha2'), 'As senhas não coincidem.');
+    return marcar(senha2, $('erro-senha2'), '');
+  }
+  function validarAceite(){
+    return marcar(null, $('erro-aceite'), aceite.checked ? '' : 'É preciso aceitar os termos para criar a conta.');
+  }
+
+  [[nome, validarNome], [email, validarEmail], [oab, validarOab], [senha, validarSenha], [senha2, validarSenha2]].forEach(function(par){
+    par[0].addEventListener('blur', par[1]);
+    par[0].addEventListener('input', function(){
+      if (par[0].getAttribute('aria-invalid') === 'true') par[1]();
+    });
+  });
+  senha.addEventListener('input', function(){
+    pintarForca();
+    if (senha2.value) validarSenha2();
+  });
+  aceite.addEventListener('change', function(){ if (aceite.checked) $('erro-aceite').textContent = ''; });
+
+  $('btn-ver-senha').addEventListener('click', function(){
+    var oculta = senha.type === 'password';
+    senha.type = oculta ? 'text' : 'password';
+    this.textContent = oculta ? 'Ocultar' : 'Mostrar';
+    this.setAttribute('aria-label', oculta ? 'Ocultar senha' : 'Mostrar senha');
+    senha.focus();
+  });
+
+  /* ---------- chamada de API (stub) ---------- */
+  function criarConta(dados){
+    if (MODO_DEMO) {
+      return new Promise(function(res){ setTimeout(function(){ res({ ok:true }); }, 900); });
+    }
+    return fetch('/api/auth/signup', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      credentials:'same-origin',
+      body:JSON.stringify(dados)
+    }).then(function(r){
+      if (r.status === 409) throw new Error('Já existe uma conta com esse e-mail. Tente entrar.');
+      if (!r.ok) throw new Error('Não foi possível criar a conta agora. Tente novamente em instantes.');
+      return r.json();
+    });
+  }
+
+  /* ---------- envio ---------- */
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    mostrarAlerta('');
+
+    var checks = [validarNome(), validarEmail(), validarOab(), validarSenha(), validarSenha2(), validarAceite()];
+    if (checks.indexOf(false) !== -1) {
+      var primeiro = form.querySelector('[aria-invalid=true]');
+      if (primeiro) primeiro.focus(); else aceite.focus();
+      return;
+    }
+
+    carregando(true);
+    criarConta({
+      nome: nome.value.trim(),
+      email: email.value.trim(),
+      oab: oab.value.trim() ? $('oab-uf').value + ' ' + oab.value.trim() : null,
+      area: $('area').value,
+      senha: senha.value,
+      plano: planoEscolhido()
+    }).then(function(){
+      // Primeiro acesso: o painel abre na seleção de área.
+      try {
+        localStorage.setItem('teseai.painel', JSON.stringify({
+          plano: { basico:'Básico', intermediario:'Intermediário', avancado:'Avançado' }[planoEscolhido()],
+          area: null, temProcessos: false, consultasUsadas: 0
+        }));
+      } catch (err) { /* modo privado: o painel usa os padrões */ }
+      window.location.href = 'painel.html?plano=' + planoEscolhido();
+    }).catch(function(err){
+      mostrarAlerta(err.message || 'Não foi possível criar a conta.');
+      carregando(false);
+    });
+  });
+
+  $('btn-google').addEventListener('click', function(){
+    if (MODO_DEMO) { mostrarAlerta('Cadastro com Google indisponível nesta prévia.'); return; }
+    window.location.href = '/api/auth/google?intent=signup';
+  });
+
+  pintarForca();
+  nome.focus();
+})();
+</script>
+</body>
+</html>

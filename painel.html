@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Tese AI — Painel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F6F3EC; --card:#FCFBF7; --navy:#0B1729;
+    --ink:#16273F; --ink-2:#2C3E58; --ink-3:#45566E; --ink-4:#52627A; --ink-5:#5C6B80; --ink-6:#8290A3;
+    --gold:#C2A166; --gold-hi:#D4B87E; --gold-ink:#9A7A3A; --gold-line:#B98A44; --gold-deep:#8F6A2A;
+    --on-navy:#F6F3EC; --on-navy-2:#93A3B8; --on-navy-3:#5F7089; --on-navy-4:#E9E2D2;
+    --fav:#3E7A5E; --neu:#6A788C; --des:#9C4A3F;
+    --linha:rgba(19,35,58,.11); --linha-2:rgba(19,35,58,.08);
+    --mono:'IBM Plex Mono',ui-monospace,monospace;
+    --serif:'Newsreader',Georgia,serif;
+    --sans:'Public Sans',-apple-system,'Segoe UI',sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--cream);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  ::selection{background:var(--gold);color:#0A1524}
+  a{color:var(--gold-ink)}
+  input::placeholder{color:#8A97AB}
+  :focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:3px}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+  [hidden]{display:none!important}
+
+  /* ---------- marca ---------- */
+  .marca{display:flex;align-items:center;gap:10px}
+  .marca-barras{display:flex;align-items:flex-end;gap:2.5px;height:17px}
+  .marca-barras i{width:4px;background:var(--gold);border-radius:1px;display:block}
+  .marca-barras i:nth-child(1){height:8px}
+  .marca-barras i:nth-child(2){height:17px}
+  .marca-barras i:nth-child(3){height:12px}
+  .marca-nome{font-family:var(--serif);font-size:21px;font-weight:600}
+
+  /* ---------- cartões e tipografia comum ---------- */
+  .cx{background:var(--card);border:1px solid var(--linha);border-radius:10px}
+  .cx-p{padding:22px}
+  .rotulo{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-6)}
+  .eyebrow{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-ink)}
+  .eyebrow::before{content:"";width:26px;height:1px;background:var(--gold-line)}
+  h1.titulo{font-family:var(--serif);font-weight:500;font-size:27px;margin:0}
+  h2.bloco{font-family:var(--serif);font-weight:500;font-size:19px;margin:0}
+  h3.bloco{font-family:var(--serif);font-weight:500;font-size:18px;margin:0}
+  .num{font-family:var(--serif);font-weight:500}
+  .sub{font-size:12px;color:var(--ink-6)}
+
+  /* ---------- botões ---------- */
+  .btn{font-family:inherit;cursor:pointer;border-radius:6px;transition:background .2s,border-color .2s,color .2s}
+  .btn-gold{background:var(--gold);border:none;color:#0A1524;font-weight:600;font-size:14px;padding:11px 22px}
+  .btn-gold:hover:not(:disabled){background:var(--gold-hi)}
+  .btn-gold:disabled{opacity:.55;cursor:not-allowed}
+  .btn-dark{background:var(--ink);border:none;color:var(--cream);font-weight:600;font-size:13px;padding:10px 16px}
+  .btn-dark:hover{background:#1E3350}
+  .btn-linha{background:none;border:1px solid rgba(19,35,58,.25);color:var(--ink);font-weight:600;font-size:13px;padding:9px 14px}
+  .btn-linha:hover{border-color:var(--ink);background:rgba(19,35,58,.04)}
+  .btn-txt{background:none;border:none;font-family:inherit;font-size:13px;font-weight:600;color:var(--gold-ink);cursor:pointer;padding:0}
+  .btn-txt:hover{color:var(--gold-line)}
+  .btn-mudo{background:none;border:none;font-family:inherit;font-size:13px;color:var(--ink-6);cursor:pointer}
+  .btn-mudo:hover{color:var(--ink-4)}
+
+  /* ---------- seleção de área ---------- */
+  #tela-areas{min-height:100vh;background:var(--cream);animation:fadeUp .35s ease-out both}
+  .areas-topo{max-width:1100px;margin:0 auto;padding:22px clamp(20px,4vw,40px);display:flex;align-items:center;justify-content:space-between}
+  .areas-corpo{max-width:1100px;margin:0 auto;padding:clamp(28px,6vh,64px) clamp(20px,4vw,40px) 72px}
+  .selo-plano{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-deep);border:1px solid rgba(178,138,68,.45);padding:5px 12px;border-radius:99px;background:rgba(194,161,102,.08)}
+  .grade-areas{margin-top:clamp(28px,4vw,44px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:16px}
+  .area{background:var(--card);border:1px solid rgba(19,35,58,.12);border-radius:8px;padding:22px;cursor:pointer;display:flex;flex-direction:column;gap:8px;text-align:left;font-family:inherit;transition:border-color .25s,transform .25s,box-shadow .25s}
+  .area:hover{border-color:rgba(178,138,68,.6);transform:translateY(-3px);box-shadow:0 14px 30px rgba(19,35,58,.09)}
+  .area h3{font-family:var(--serif);font-weight:500;font-size:21px;margin:0}
+  .area p{font-size:13.5px;line-height:1.6;color:var(--ink-5);margin:0;flex:1}
+  .area .ir{font-size:13.5px;font-weight:600;color:var(--gold-ink);margin-top:10px}
+  .area-bloq{border:1px dashed rgba(19,35,58,.22);border-radius:8px;padding:22px;display:flex;flex-direction:column;gap:8px;background:rgba(252,251,247,.5)}
+  .area-bloq h3{font-family:var(--serif);font-weight:500;font-size:21px;margin:0;color:#6A788C}
+  .area-bloq p{font-size:13.5px;line-height:1.6;color:var(--ink-6);margin:0;flex:1}
+  .area-bloq .selo{align-self:flex-start;margin-top:10px;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-deep);border:1px solid rgba(178,138,68,.4);padding:4px 10px;border-radius:99px}
+
+  /* ---------- estrutura do app ---------- */
+  #app{display:flex;min-height:100vh;align-items:stretch}
+  .sidebar{width:236px;flex-shrink:0;background:var(--navy);position:sticky;top:0;height:100vh;display:flex;flex-direction:column}
+  .sidebar-topo{display:flex;align-items:center;gap:10px;padding:20px 20px 18px;border-bottom:1px solid rgba(246,243,236,.07)}
+  .sidebar-topo .marca-nome{color:var(--on-navy);font-size:20px}
+  .sidebar-topo .marca-nome span{color:var(--gold)}
+  .nav{padding:14px 0;display:flex;flex-direction:column;gap:2px}
+  .nav-item{display:block;width:100%;text-align:left;background:none;border:none;border-left:2px solid transparent;padding:11px 20px;font-family:inherit;font-size:13.5px;color:var(--on-navy-2);cursor:pointer;transition:color .2s,background .2s}
+  .nav-item:hover{color:var(--on-navy)}
+  .nav-item.ativo{background:rgba(194,161,102,.12);border-left-color:var(--gold);font-weight:600;color:var(--on-navy)}
+  .sidebar-area{margin-top:auto;padding:16px 20px;border-top:1px solid rgba(246,243,236,.07)}
+  .sidebar-area .rotulo{color:var(--on-navy-3);font-size:10px;letter-spacing:.16em}
+  .area-ativa{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--on-navy-4)}
+  .area-ativa::before{content:"";width:7px;height:7px;border-radius:99px;background:var(--gold)}
+  .btn-trocar{background:none;border:none;font-family:inherit;font-size:12px;color:#C9AC6F;cursor:pointer;padding:0}
+  .btn-trocar:hover{color:var(--gold-hi)}
+  .sidebar-user{padding:16px 20px 20px;border-top:1px solid rgba(246,243,236,.07);display:flex;align-items:center;gap:10px}
+  .avatar{width:32px;height:32px;border-radius:99px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}
+  .avatar-claro{background:rgba(194,161,102,.18);border:1px solid rgba(203,173,114,.4);color:#E4D9BE}
+  .avatar-escuro{background:var(--ink);color:var(--cream)}
+
+  main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .topbar{height:60px;background:var(--card);border-bottom:1px solid rgba(19,35,58,.1);display:flex;align-items:center;gap:12px;padding:0 clamp(14px,3vw,28px);position:sticky;top:0;z-index:30}
+  .busca{flex:1;max-width:420px;background:var(--cream);border:1px solid rgba(19,35,58,.12);border-radius:6px;padding:9px 14px;font-family:inherit;font-size:13.5px;color:var(--ink);outline:none}
+  .busca:focus{border-color:var(--gold)}
+  .topbar-dir{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .pill-area{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-3);background:rgba(19,35,58,.05);border:1px solid rgba(19,35,58,.1);padding:7px 12px;border-radius:99px}
+  .pill-area::before{content:"";width:6px;height:6px;border-radius:99px;background:var(--gold)}
+  .pill-limite{background:rgba(194,161,102,.1);border:1px solid rgba(178,138,68,.45);color:var(--gold-deep);font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;padding:6px 11px;border-radius:99px;cursor:pointer}
+  .pill-limite:hover{background:rgba(194,161,102,.18)}
+  .btn-menu{background:none;border:1px solid rgba(19,35,58,.25);color:var(--ink);font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;padding:7px 12px;border-radius:5px;cursor:pointer}
+  #menu-mobile{position:fixed;top:60px;left:0;right:0;bottom:0;z-index:25;background:var(--navy);padding:14px 8px;overflow:auto}
+  .tela{padding:clamp(18px,3vw,32px);max-width:1280px;width:100%;animation:fadeUp .35s ease-out both}
+  #tela-assistente{max-width:860px;display:flex;flex-direction:column;flex:1}
+  #tela-conta{max-width:1080px}
+
+  /* ---------- indicadores ---------- */
+  .kpis{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:14px}
+  .kpi{background:var(--card);border:1px solid var(--linha);border-radius:8px;padding:18px 20px}
+  .kpi .t{font-size:12.5px;color:var(--ink-5)}
+  .kpi .v{font-family:var(--serif);font-weight:500;font-size:34px;margin-top:6px}
+  .kpi .d{font-size:12px;color:var(--ink-6);margin-top:4px}
+
+  /* ---------- tabela de processos ---------- */
+  .tabela-cab,.linha-proc{display:grid;grid-template-columns:185px 1.05fr 1.5fr 105px 115px 1.35fr;gap:14px}
+  .tabela-rolagem{overflow-x:auto}
+  .tabela-int{min-width:1020px}
+  .tabela-cab{padding:10px 20px;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-6)}
+  .linha-proc{align-items:center;padding:12px 20px;border-top:1px solid var(--linha-2);cursor:pointer;transition:background .15s;width:100%;background:none;border-left:none;border-right:none;border-bottom:none;font-family:inherit;text-align:left}
+  .linha-proc:hover{background:rgba(194,161,102,.07)}
+  .cnj{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+  .fase{justify-self:start;font-size:12px;padding:4px 10px;border-radius:4px;background:rgba(19,35,58,.06);border:1px solid rgba(19,35,58,.1);color:var(--ink-3)}
+  .legenda{padding:12px 20px;border-top:1px solid rgba(19,35,58,.09);display:flex;align-items:center;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--ink-6)}
+  .ponto{width:7px;height:7px;border-radius:99px;display:inline-block}
+  .vazio-busca{padding:28px 20px;text-align:center;font-size:13.5px;color:var(--ink-6)}
+
+  /* ---------- barras ---------- */
+  .trilho{height:6px;border-radius:99px;background:rgba(19,35,58,.09);overflow:hidden}
+  .trilho i{display:block;height:100%;border-radius:99px;background:var(--gold)}
+  .barra-linha{display:flex;justify-content:space-between;gap:12px;font-size:13px;margin-bottom:6px}
+  .barra-linha span:first-child{color:var(--ink-2)}
+  .barra-val{font-family:var(--mono);font-size:12px;color:var(--gold-deep);white-space:nowrap}
+
+  /* ---------- estados vazio / carregando ---------- */
+  .estado{margin-top:20px;background:var(--card);border:1px solid var(--linha);border-radius:10px;padding:clamp(36px,7vw,72px) 24px;display:flex;flex-direction:column;align-items:center;text-align:center}
+  .estado-icone{width:58px;height:58px;border-radius:99px;background:rgba(194,161,102,.12);border:1px dashed rgba(178,138,68,.5);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:26px;color:var(--gold-ink)}
+  .equalizador{display:flex;align-items:flex-end;gap:4px;height:26px}
+  .equalizador i{width:6px;background:var(--gold);border-radius:2px;display:block;animation:pulse 1.2s ease-in-out infinite}
+  .equalizador i:nth-child(1){height:12px}
+  .equalizador i:nth-child(2){height:26px;animation-delay:.2s}
+  .equalizador i:nth-child(3){height:18px;animation-delay:.4s}
+  .esqueleto{width:100%;max-width:460px;margin-top:26px;display:flex;flex-direction:column;gap:10px}
+  .esqueleto i{display:block;height:10px;border-radius:99px;background:rgba(19,35,58,.1);animation:pulse 1.4s ease-in-out infinite}
+  .esqueleto i:nth-child(2){width:78%;animation-delay:.2s}
+  .esqueleto i:nth-child(3){width:56%;animation-delay:.4s}
+  .aviso-ok{margin-bottom:14px;background:rgba(62,122,94,.08);border:1px solid rgba(62,122,94,.3);border-radius:8px;padding:12px 16px;font-size:13.5px;color:#2E5C47}
+  .aviso-gold{background:rgba(194,161,102,.07);border:1px solid rgba(178,138,68,.4);border-radius:10px;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+  /* ---------- formulários ---------- */
+  .campo-cnj{background:var(--cream);border:1px solid rgba(19,35,58,.15);border-radius:6px;padding:12px 14px;font-family:var(--mono);font-size:13px;color:var(--ink);outline:none}
+  .campo-cnj:focus{border-color:var(--gold)}
+  .filtros{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+  .filtros label{display:block}
+  .filtros span{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-6);margin-bottom:6px}
+  .filtros select{width:100%;background:var(--cream);border:1px solid rgba(19,35,58,.13);border-radius:6px;padding:9px 10px;font-family:inherit;font-size:13px;color:var(--ink)}
+
+  /* ---------- perfil do juiz ---------- */
+  .juiz-topo{margin-top:14px;background:var(--card);border:1px solid var(--linha);border-radius:10px;padding:24px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+  .tag{font-size:12px;padding:4px 10px;border-radius:4px;background:rgba(19,35,58,.06);border:1px solid rgba(19,35,58,.1);color:var(--ink-3)}
+  .tag-gold{background:rgba(194,161,102,.12);border-color:rgba(178,138,68,.35);color:var(--gold-deep)}
+  .grade-2{margin-top:14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:14px}
+  .grade-kpi{margin-top:14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(215px,100%),1fr));gap:14px}
+  .tendencia{flex:1;display:flex;align-items:flex-end;gap:3px;margin-top:18px;min-height:110px}
+  .tendencia i{flex:1;border-radius:2px 2px 0 0;display:block}
+
+  /* ---------- assistente ---------- */
+  .chat{margin-top:22px;display:flex;flex-direction:column;gap:14px;flex:1}
+  .msg-user{align-self:flex-end;max-width:78%;background:var(--ink);color:var(--cream);border-radius:10px 10px 2px 10px;padding:12px 16px;font-size:14.5px;line-height:1.6}
+  .msg-ia{align-self:flex-start;max-width:94%;background:var(--card);border:1px solid var(--linha);border-radius:10px 10px 10px 2px;padding:16px 18px}
+  .msg-ia p{font-size:14.5px;line-height:1.68;color:var(--ink-2);margin:0;text-wrap:pretty}
+  .fontes{margin-top:14px;border-top:1px solid rgba(19,35,58,.09);padding-top:12px}
+  .fonte{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .fonte .c{font-family:var(--mono);font-size:12px;color:var(--gold-deep)}
+  .fonte .d{font-size:12px;color:var(--ink-6)}
+  .fonte .r{font-size:11px;padding:2px 8px;border-radius:99px;background:rgba(19,35,58,.06);border:1px solid rgba(19,35,58,.1);color:var(--ink-3)}
+  .digitando{align-self:flex-start;background:var(--card);border:1px solid var(--linha);border-radius:10px 10px 10px 2px;padding:14px 18px;display:flex;align-items:center;gap:10px}
+  .pontos{display:flex;gap:4px}
+  .pontos i{width:6px;height:6px;border-radius:99px;background:var(--gold);display:block;animation:pulse 1.1s ease-in-out infinite}
+  .pontos i:nth-child(2){animation-delay:.18s}
+  .pontos i:nth-child(3){animation-delay:.36s}
+  .chat-envio{margin-top:20px;display:flex;gap:10px}
+  .chat-envio input{flex:1;background:var(--card);border:1px solid rgba(19,35,58,.15);border-radius:8px;padding:13px 16px;font-family:inherit;font-size:14px;color:var(--ink);outline:none}
+  .chat-envio input:focus{border-color:var(--gold)}
+
+  /* ---------- responsivo ---------- */
+  #btn-menu,#menu-mobile,.topbar .marca{display:none}
+  @media (max-width:959px){
+    .sidebar{display:none}
+    #btn-menu{display:block}
+    .topbar .marca{display:flex}
+    .topbar .marca-nome{font-size:18px}
+    .topbar .marca-nome span{color:var(--gold-ink)}
+    .busca,.pill-area{display:none}
+    #menu-mobile.aberto{display:block}
+    .msg-user,.msg-ia{max-width:100%}
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= Seleção de área ================= -->
+<div id="tela-areas">
+  <div class="areas-topo">
+    <div class="marca">
+      <span class="marca-barras"><i></i><i></i><i></i></span>
+      <span class="marca-nome">Tese <span style="color:#9A7A3A">AI</span></span>
+    </div>
+    <button class="btn-mudo" data-sair>Sair</button>
+  </div>
+  <div class="areas-corpo">
+    <div class="eyebrow" id="areas-eyebrow">Primeiro acesso</div>
+    <div style="display:flex;align-items:end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:16px">
+      <h1 style="font-family:var(--serif);font-weight:500;font-size:clamp(30px,4vw,42px);line-height:1.12;letter-spacing:-.01em;margin:0;text-wrap:balance">Escolha sua área do direito.</h1>
+      <span class="selo-plano" id="selo-plano">Plano Intermediário</span>
+    </div>
+    <p style="font-size:15.5px;line-height:1.65;color:var(--ink-4);margin:14px 0 0;max-width:62ch;text-wrap:pretty">A análise é calibrada para as demandas típicas de cada área. Seu plano define quantas ficam ativas — dá para trocar depois, sem perder dados.</p>
+    <div class="grade-areas" id="grade-areas"></div>
+    <p style="margin-top:28px;font-size:13.5px;color:var(--ink-5)" id="linha-upgrade">Precisa de mais áreas? <a href="index.html#planos" style="font-weight:600;text-decoration:none">Conheça o plano Avançado →</a></p>
+  </div>
+</div>
+
+<!-- ================= Aplicação ================= -->
+<div id="app" hidden>
+  <aside class="sidebar">
+    <div class="sidebar-topo">
+      <span class="marca-barras"><i></i><i></i><i></i></span>
+      <span class="marca-nome">Tese <span>AI</span></span>
+    </div>
+    <nav class="nav" id="nav-desktop"></nav>
+    <div class="sidebar-area">
+      <div class="rotulo">Área ativa</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px">
+        <span class="area-ativa" data-area-nome>Consumidor</span>
+        <button class="btn-trocar" data-ir="areas">Trocar</button>
+      </div>
+    </div>
+    <div class="sidebar-user">
+      <div class="avatar avatar-claro" data-iniciais>AF</div>
+      <div style="min-width:0">
+        <div style="font-size:13px;color:#DDE4EC" data-nome-usuario>Ana Ferraz</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--on-navy-3)" data-oab>OAB/SP 214.556</div>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="topbar">
+      <button id="btn-menu" aria-expanded="false" aria-controls="menu-mobile"><span id="btn-menu-txt">Menu</span></button>
+      <div class="marca"><span class="marca-nome">Tese <span>AI</span></span></div>
+      <input class="busca" id="busca" placeholder="Buscar juiz, vara ou processo…" aria-label="Buscar processos">
+      <div class="topbar-dir">
+        <button class="pill-limite" id="pill-limite" data-ir="conta" hidden></button>
+        <span class="pill-area" data-area-nome>Consumidor</span>
+        <div class="avatar avatar-escuro" data-iniciais>AF</div>
+      </div>
+    </div>
+    <div id="menu-mobile"><nav id="nav-mobile"></nav>
+      <div style="margin:16px 20px 0;padding-top:16px;border-top:1px solid rgba(246,243,236,.1);display:flex;align-items:center;justify-content:space-between">
+        <span class="area-ativa" data-area-nome>Consumidor</span>
+        <button class="btn-trocar" data-ir="areas">Trocar área</button>
+      </div>
+    </div>
+
+    <!-- ---- Visão geral ---- -->
+    <div class="tela" id="tela-home" hidden>
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap">
+        <h1 class="titulo">Visão geral</h1>
+        <span style="font-family:var(--mono);font-size:11px;color:var(--ink-6)" id="data-hoje"></span>
+      </div>
+      <div class="kpis">
+        <div class="kpi"><div class="t">Processos ativos</div><div class="v" id="kpi-processos">37</div><div class="d">3 importados este mês</div></div>
+        <div class="kpi"><div class="t">Prazos nos próximos 7 dias</div><div class="v" style="color:var(--gold-deep)">5</div><div class="d">2 com audiência marcada</div></div>
+        <div class="kpi"><div class="t">Procedência média nas suas varas</div><div class="v">58%</div><div class="d">em 3.412 decisões · total ou parcial</div></div>
+        <div class="kpi"><div class="t">Decisões analisadas pela IA</div><div class="v">12.847</div><div class="d" id="kpi-area">área do Consumidor · há 2 dias</div></div>
+      </div>
+      <div class="cx" style="margin-top:18px;overflow:hidden">
+        <div style="padding:16px 20px;display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap">
+          <div>
+            <h2 class="bloco">Processos organizados pela IA</h2>
+            <div class="sub" style="margin-top:3px" id="home-contagem">37 ativos · atualizados há 2 horas</div>
+          </div>
+          <button class="btn-txt" data-ir="processos">Ver todos →</button>
+        </div>
+        <div class="tabela-rolagem">
+          <div class="tabela-int">
+            <div class="tabela-cab" style="border-top:1px solid rgba(19,35,58,.09)">
+              <span>Nº CNJ</span><span>Cliente</span><span>Vara e juiz</span><span>Fase</span><span>Próx. prazo</span><span>Padrão do juiz</span>
+            </div>
+            <div id="home-linhas"></div>
+          </div>
+        </div>
+        <div class="legenda">
+          <span style="display:flex;align-items:center;gap:6px"><span class="ponto" style="background:var(--fav)"></span>Favorável ao tipo de pedido</span>
+          <span style="display:flex;align-items:center;gap:6px"><span class="ponto" style="background:var(--neu)"></span>Neutro</span>
+          <span style="display:flex;align-items:center;gap:6px"><span class="ponto" style="background:var(--des)"></span>Desfavorável</span>
+          <span style="margin-left:auto">Padrão observado no histórico do julgador — sempre com a base amostral indicada.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- Processos ---- -->
+    <div class="tela" id="tela-processos" hidden>
+      <h1 class="titulo">Processos</h1>
+
+      <div class="estado" id="proc-vazio">
+        <div class="estado-icone">§</div>
+        <h2 style="font-family:var(--serif);font-weight:500;font-size:24px;margin:20px 0 0">Nenhum processo por aqui.</h2>
+        <p style="font-size:14.5px;line-height:1.65;color:var(--ink-4);margin:10px 0 0;max-width:48ch;text-wrap:pretty">Importe pelo número CNJ e a IA organiza vara, fase, prazos e o padrão do julgador para cada caso.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:24px;width:100%;max-width:520px">
+          <input class="campo-cnj" id="cnj-vazio" style="flex:1;min-width:220px" placeholder="0000000-00.0000.8.26.0000" aria-label="Número CNJ">
+          <button class="btn btn-gold" data-importar="cnj-vazio" style="padding:12px 22px">Importar processo</button>
+        </div>
+        <span class="erro-cnj" id="erro-cnj-vazio" style="font-size:12.5px;color:var(--des);margin-top:10px"></span>
+        <button class="btn-mudo" style="margin-top:14px;text-decoration:underline;text-underline-offset:3px">ou importe uma planilha (.csv)</button>
+        <p class="sub" style="margin:18px 0 0">Depois da importação, novas movimentações são monitoradas automaticamente.</p>
+      </div>
+
+      <div class="estado" id="proc-carregando" hidden>
+        <span class="equalizador"><i></i><i></i><i></i></span>
+        <h2 style="font-family:var(--serif);font-weight:500;font-size:22px;margin:18px 0 0">IA analisando decisões…</h2>
+        <p style="font-size:14px;color:var(--ink-4);margin:8px 0 0;max-width:46ch">Identificando juízo, classe e pedidos, e cruzando com o histórico público do julgador.</p>
+        <span class="esqueleto"><i></i><i></i><i></i></span>
+      </div>
+
+      <div id="proc-lista" hidden style="margin-top:20px">
+        <div class="aviso-ok" id="aviso-importado" hidden>Processo importado. O padrão do juízo já está disponível abaixo.</div>
+        <div class="cx" style="overflow:hidden">
+          <div style="padding:14px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid rgba(19,35,58,.09)">
+            <input class="campo-cnj" id="cnj-lista" style="flex:1;min-width:200px;max-width:340px;padding:9px 12px;font-size:12.5px" placeholder="Importar por número CNJ" aria-label="Número CNJ">
+            <button class="btn btn-dark" data-importar="cnj-lista">Importar</button>
+            <span class="erro-cnj" id="erro-cnj-lista" style="font-size:12.5px;color:var(--des)"></span>
+          </div>
+          <div class="tabela-rolagem">
+            <div class="tabela-int">
+              <div class="tabela-cab">
+                <span>Nº CNJ</span><span>Cliente</span><span>Vara e juiz</span><span>Fase</span><span>Próx. prazo</span><span>Padrão do juiz</span>
+              </div>
+              <div id="proc-linhas"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- Perfil do juiz ---- -->
+    <div class="tela" id="tela-juiz" hidden>
+      <div style="font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-6)">
+        <button class="btn-txt" style="font-weight:400;font-size:11px;letter-spacing:.12em;text-transform:uppercase" data-ir="home">Visão geral</button> / Juízes / Perfil
+      </div>
+      <div class="juiz-topo">
+        <div>
+          <h1 style="font-family:var(--serif);font-weight:500;font-size:clamp(24px,3vw,30px);margin:0" id="juiz-nome">Juíza M. H. Vasconcelos</h1>
+          <div style="font-size:14px;color:var(--ink-4);margin-top:6px" id="juiz-vara">12ª Vara Cível · Comarca de São Paulo · TJSP</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+            <span class="tag tag-gold" data-area-nome>Consumidor</span>
+            <span class="tag">Titular desde 2019</span>
+          </div>
+        </div>
+        <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+          <div class="rotulo">Base amostral</div>
+          <div class="num" style="font-size:24px" id="juiz-base">1.284 decisões</div>
+          <div class="sub">jan 2019 – jun 2026 · atualizado há 2 dias</div>
+          <button class="btn btn-linha" style="margin-top:6px;font-size:12.5px;padding:8px 14px" id="btn-exportar">Exportar perfil (PDF)</button>
+        </div>
+      </div>
+      <div class="grade-kpi">
+        <div class="kpi"><div class="t">Procedência — total ou parcial</div><div class="v" style="font-size:30px" id="juiz-proc">64%</div><div class="d" style="font-size:11.5px" id="juiz-proc-base">em 1.284 decisões</div></div>
+        <div class="kpi"><div class="t">Tempo médio até a sentença</div><div class="v" style="font-size:30px" id="juiz-tempo">14 meses</div><div class="d" style="font-size:11.5px">mediana de 12 · em 1.284 decisões</div></div>
+        <div class="kpi"><div class="t">Tendência em 24 meses</div><div class="v" style="font-size:30px;color:var(--fav)">+6 p.p.</div><div class="d" style="font-size:11.5px">na procedência · 412 decisões no período</div></div>
+        <div class="kpi"><div class="t">Frente à média da comarca</div><div class="v" style="font-size:30px;color:var(--gold-deep)">+9 p.p.</div><div class="d" style="font-size:11.5px">comarca: 55% em 31.408 decisões</div></div>
+      </div>
+      <div class="grade-2">
+        <div class="cx cx-p">
+          <h3 class="bloco">Procedência por tipo de demanda</h3>
+          <div style="margin-top:16px;display:flex;flex-direction:column;gap:14px" id="juiz-demandas"></div>
+          <div style="font-size:11.5px;color:var(--ink-6);margin-top:16px">Procedência total ou parcial do pedido principal.</div>
+        </div>
+        <div class="cx cx-p" style="display:flex;flex-direction:column">
+          <h3 class="bloco">Tendência de procedência — últimos 24 meses</h3>
+          <div class="tendencia" id="juiz-trend"></div>
+          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;color:var(--ink-6);margin-top:8px"><span>jul/24</span><span>média móvel trimestral</span><span>jun/26</span></div>
+        </div>
+        <div class="cx cx-p">
+          <h3 class="bloco">Comparação com a média da comarca</h3>
+          <div style="margin-top:18px;display:flex;flex-direction:column;gap:18px">
+            <div>
+              <div class="barra-linha"><span>Procedência</span><span style="font-family:var(--mono);font-size:12px;color:var(--ink-5)">juíza 64% · comarca 55%</span></div>
+              <div class="trilho" style="height:8px;margin-bottom:4px"><i style="width:64%"></i></div>
+              <div class="trilho" style="height:8px"><i style="width:55%;background:#46586F"></i></div>
+            </div>
+            <div>
+              <div class="barra-linha"><span>Tempo até a sentença</span><span style="font-family:var(--mono);font-size:12px;color:var(--ink-5)">juíza 14 m · comarca 18 m</span></div>
+              <div class="trilho" style="height:8px;margin-bottom:4px"><i style="width:58%"></i></div>
+              <div class="trilho" style="height:8px"><i style="width:75%;background:#46586F"></i></div>
+            </div>
+            <div>
+              <div class="barra-linha"><span>Acordo em audiência</span><span style="font-family:var(--mono);font-size:12px;color:var(--ink-5)">juíza 27% · comarca 22%</span></div>
+              <div class="trilho" style="height:8px;margin-bottom:4px"><i style="width:27%"></i></div>
+              <div class="trilho" style="height:8px"><i style="width:22%;background:#46586F"></i></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:16px;margin-top:16px;font-size:11.5px;color:var(--ink-6)">
+            <span style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:2px;background:var(--gold)"></span>Juíza</span>
+            <span style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:2px;background:#46586F"></span>Comarca — 42 varas cíveis · 31.408 decisões</span>
+          </div>
+        </div>
+        <div class="cx cx-p" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:22px">
+          <div>
+            <h3 class="bloco" style="margin-bottom:14px">Teses mais aceitas</h3>
+            <div style="display:flex;flex-direction:column;gap:12px" id="teses-aceitas"></div>
+          </div>
+          <div>
+            <h3 class="bloco" style="margin-bottom:14px">Teses mais rejeitadas</h3>
+            <div style="display:flex;flex-direction:column;gap:12px" id="teses-rejeitadas"></div>
+            <div style="font-size:11.5px;color:var(--ink-6);margin-top:14px">Aceitação = acolhimento total ou parcial da tese.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- Pesquisa de padrões ---- -->
+    <div class="tela" id="tela-pesquisa" hidden>
+      <h1 class="titulo">Pesquisa de padrões</h1>
+      <p style="font-size:14px;color:var(--ink-4);margin:8px 0 0;max-width:64ch">Combine filtros para comparar como diferentes juízos decidem o mesmo tipo de demanda.</p>
+      <div class="cx" style="margin-top:18px;padding:18px 20px">
+        <div class="filtros">
+          <label><span>Área</span><select id="f-area"><option>Consumidor</option><option>Cível</option><option>Trabalhista</option></select></label>
+          <label><span>Tribunal</span><select id="f-tribunal"><option>TJSP</option><option>TJRJ</option><option>TJMG</option></select></label>
+          <label><span>Comarca</span><select id="f-comarca"><option>São Paulo</option><option>Campinas</option><option>Santos</option></select></label>
+          <label><span>Tipo de demanda</span><select id="f-demanda"><option>Dano moral — telefonia</option><option>Negativação indevida</option><option>Cobrança indevida</option></select></label>
+          <label><span>Juiz</span><select id="f-juiz"><option>Todos</option><option>M. H. Vasconcelos</option></select></label>
+          <label><span>Período</span><select id="f-periodo"><option>Últimos 24 meses</option><option>Últimos 12 meses</option><option>Desde 2019</option></select></label>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:16px">
+          <button class="btn btn-gold" id="btn-buscar">Buscar padrões</button>
+          <span class="sub" id="aviso-consulta">Cada busca consome 1 consulta do plano.</span>
+        </div>
+      </div>
+      <div class="estado" id="pesq-carregando" hidden style="padding:48px 24px">
+        <span class="equalizador"><i></i><i></i><i></i></span>
+        <div style="font-family:var(--serif);font-size:20px;margin-top:16px">IA analisando decisões…</div>
+        <div style="font-size:13.5px;color:var(--ink-4);margin-top:6px">Cruzando 12.847 decisões públicas do recorte selecionado.</div>
+      </div>
+      <div id="pesq-resultados" style="margin-top:16px">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap">
+          <div style="font-size:14px;color:var(--ink-2)"><strong style="font-weight:600">3 juízos encontrados</strong> — <span id="pesq-recorte">Dano moral — telefonia · Comarca de São Paulo</span></div>
+          <span style="font-family:var(--mono);font-size:11px;color:var(--ink-6)" id="pesq-periodo">últimos 24 meses</span>
+        </div>
+        <div style="margin-top:14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:14px" id="pesq-cards"></div>
+        <div class="sub" style="margin-top:14px">Percentuais de procedência total ou parcial. Resultados descrevem padrões observados — não constituem previsão.</div>
+      </div>
+    </div>
+
+    <!-- ---- Assistente ---- -->
+    <div class="tela" id="tela-assistente" hidden>
+      <h1 class="titulo">Assistente</h1>
+      <p style="font-size:14px;color:var(--ink-4);margin:8px 0 0;max-width:60ch">Pergunte em linguagem natural. As respostas trazem números, base amostral e as decisões-fonte.</p>
+      <div class="chat" id="chat"></div>
+      <div class="chat-envio">
+        <input id="assist-input" placeholder="Ex.: como a 3ª Vara Cível decide falha de serviço bancário?" aria-label="Pergunta ao assistente">
+        <button class="btn btn-gold" id="btn-perguntar" style="padding:13px 22px;border-radius:8px">Perguntar</button>
+      </div>
+      <div class="sub" style="margin-top:10px">O assistente descreve padrões históricos de decisões públicas. Não fornece aconselhamento jurídico nem previsão de resultado.</div>
+    </div>
+
+    <!-- ---- Plano e conta ---- -->
+    <div class="tela" id="tela-conta" hidden>
+      <h1 class="titulo">Plano e conta</h1>
+      <div class="aviso-gold" id="banner-limite" hidden style="margin-top:18px">
+        <div>
+          <div style="font-size:14.5px;font-weight:600;color:var(--ink-2)" id="banner-limite-t">Você usou as 200 consultas do ciclo.</div>
+          <div style="font-size:13.5px;color:var(--ink-4);margin-top:3px">Elas renovam em 01/08. Se preferir não esperar, o Avançado tem consultas ilimitadas.</div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <a href="index.html#planos" class="btn" style="background:none;border:1px solid rgba(178,138,68,.6);color:var(--gold-deep);font-weight:600;font-size:13.5px;padding:10px 16px;text-decoration:none">Conhecer o Avançado</a>
+          <button class="btn-mudo" id="banner-dispensar">Agora não</button>
+        </div>
+      </div>
+      <div style="margin-top:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:14px">
+        <div class="cx cx-p">
+          <div class="rotulo">Plano atual</div>
+          <div style="display:flex;align-items:baseline;gap:12px;margin-top:8px;flex-wrap:wrap">
+            <span class="num" style="font-size:26px" id="conta-plano">Intermediário</span>
+            <span style="font-size:13.5px;color:var(--ink-4)"><span id="conta-preco">R$ 149/mês</span> · renova em 01/08/2026</span>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px" id="conta-areas"></div>
+          <div style="display:flex;align-items:center;gap:16px;margin-top:20px">
+            <a href="index.html#planos" class="btn btn-linha" style="text-decoration:none">Mudar plano</a>
+            <button class="btn-mudo" style="font-size:12.5px;text-decoration:underline;text-underline-offset:3px">Cancelar assinatura</button>
+          </div>
+        </div>
+        <div class="cx cx-p">
+          <div class="rotulo">Uso do ciclo · 01/07 – 31/07</div>
+          <div style="margin-top:16px;display:flex;flex-direction:column;gap:16px">
+            <div>
+              <div class="barra-linha"><span>Consultas de padrão</span><span style="font-family:var(--mono);font-size:12px;color:var(--ink-5)" id="uso-consultas">148 de 200</span></div>
+              <div class="trilho" style="height:7px"><i id="uso-consultas-barra" style="width:74%"></i></div>
+            </div>
+            <div>
+              <div class="barra-linha"><span>Áreas ativas</span><span style="font-family:var(--mono);font-size:12px;color:var(--ink-5)" id="uso-areas">3 de 3</span></div>
+              <div class="trilho" style="height:7px"><i style="width:100%;background:#46586F"></i></div>
+            </div>
+            <div>
+              <div class="barra-linha"><span>Processos monitorados</span><span style="font-family:var(--mono);font-size:12px;color:var(--ink-5)" id="uso-processos">37 de 100</span></div>
+              <div class="trilho" style="height:7px"><i id="uso-processos-barra" style="width:37%;background:#46586F"></i></div>
+            </div>
+          </div>
+        </div>
+        <div class="cx cx-p">
+          <div class="rotulo">Pagamento</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px">
+            <span style="font-size:14px;color:var(--ink-2)">Mastercard <span style="font-family:var(--mono)">•••• 4412</span></span>
+            <button class="btn-txt">Alterar</button>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid var(--linha-2)">
+            <span style="font-size:13px;color:var(--ink-4)">Nota fiscal — CNPJ <span style="font-family:var(--mono);font-size:12px">12.345.678/0001-90</span></span>
+            <button class="btn-txt">Editar</button>
+          </div>
+        </div>
+        <div class="cx cx-p">
+          <div class="rotulo">Faturas</div>
+          <div style="margin-top:8px;display:flex;flex-direction:column" id="faturas"></div>
+        </div>
+      </div>
+      <div style="margin-top:20px">
+        <button class="btn-mudo" data-sair style="text-decoration:underline;text-underline-offset:3px">Sair da conta</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* =======================================================
+     Dados de demonstração. Substituir pelas chamadas de API.
+     ======================================================= */
+  var FAV = '#3E7A5E', NEU = '#6A788C', DES = '#9C4A3F';
+
+  var AREAS = [
+    { nome:'Consumidor',     desc:'Cobrança indevida, falha de serviço, negativação.' },
+    { nome:'Cível',          desc:'Contratos, responsabilidade civil, cobrança, execução.' },
+    { nome:'Trabalhista',    desc:'Horas extras, vínculo, verbas rescisórias.' },
+    { nome:'Tributário',     desc:'Execução fiscal, compensação, teses repetitivas.' },
+    { nome:'Previdenciário', desc:'Concessão e revisão de benefícios, tempo especial.' },
+    { nome:'Família',        desc:'Alimentos, guarda, divórcio, partilha.' },
+    { nome:'Empresarial',    desc:'Societário, recuperação judicial, contratos.' },
+    { nome:'Penal',          desc:'Dosimetria, medidas cautelares, execução penal.' }
+  ];
+
+  var PROCESSOS = [
+    { cnj:'1023481-56.2025.8.26.0100', cliente:'M. R. Albuquerque', vara:'12ª Vara Cível · São Paulo', juiz:'Juíza M. H. Vasconcelos', fase:'Instrução',   prazo:'24/07', prazoRel:'em 2 dias',  prazoCor:DES,       pad:'Favorável',    padSub:'72% · 148 decisões', padCor:FAV },
+    { cnj:'1019204-33.2024.8.26.0100', cliente:'S. L. Furtado',     vara:'3ª Vara Cível · São Paulo',  juiz:'Juiz R. T. Salles',      fase:'Sentença',    prazo:'26/07', prazoRel:'em 4 dias',  prazoCor:'#8F6A2A', pad:'Neutro',       padSub:'49% · 132 decisões', padCor:NEU },
+    { cnj:'1007742-90.2026.8.26.0002', cliente:'J. C. Menezes',     vara:'2ª Vara Cível · Santo Amaro',juiz:'Juiz P. A. Fontoura',    fase:'Citação',     prazo:'05/08', prazoRel:'em 14 dias', prazoCor:'#16273F', pad:'Desfavorável', padSub:'34% · 210 decisões', padCor:DES },
+    { cnj:'1031055-27.2025.8.26.0100', cliente:'A. P. Nogueira',    vara:'41ª Vara Cível · São Paulo', juiz:'Juiz L. F. Prado',       fase:'Recurso',     prazo:'11/08', prazoRel:'em 20 dias', prazoCor:'#16273F', pad:'Neutro',       padSub:'51% · 77 decisões',  padCor:NEU },
+    { cnj:'1002913-08.2024.8.26.0011', cliente:'Condomínio Vila Aurora', vara:'5ª Vara Cível · Pinheiros', juiz:'Juíza C. M. Rezende', fase:'Execução',  prazo:'19/08', prazoRel:'em 28 dias', prazoCor:'#16273F', pad:'Favorável',    padSub:'66% · 132 decisões', padCor:FAV },
+    { cnj:'1044208-61.2025.8.26.0100', cliente:'R. B. Siqueira',    vara:'28ª Vara Cível · São Paulo', juiz:'Juiz D. R. Antunes',     fase:'Conciliação', prazo:'29/07', prazoRel:'em 7 dias',  prazoCor:'#8F6A2A', pad:'Favorável',    padSub:'61% · 89 decisões',  padCor:FAV },
+    { cnj:'1010337-45.2026.8.26.0100', cliente:'T. V. Sampaio',     vara:'19ª Vara Cível · São Paulo', juiz:'Juíza H. K. Moraes',     fase:'Inicial',     prazo:'02/09', prazoRel:'em 42 dias', prazoCor:'#16273F', pad:'Neutro',       padSub:'47% · 58 decisões',  padCor:NEU }
+  ];
+
+  var DEMANDAS = [
+    { n:'Plano de saúde — negativa de cobertura', v:'72%', b:'151 decisões' },
+    { n:'Cobrança indevida',                      v:'68%', b:'312 decisões' },
+    { n:'Negativação indevida',                   v:'66%', b:'287 decisões' },
+    { n:'Falha na prestação de serviço',          v:'61%', b:'244 decisões' },
+    { n:'Telefonia e internet',                   v:'58%', b:'196 decisões' }
+  ];
+  var TESES_A = [
+    { n:'Inversão do ônus da prova',            p:'78%', b:'391 decisões' },
+    { n:'Dano moral por negativação indevida',  p:'71%', b:'187 decisões' },
+    { n:'Repetição do indébito em dobro',       p:'66%', b:'214 decisões' },
+    { n:'Dano moral por cobrança reiterada',    p:'57%', b:'119 decisões' }
+  ];
+  var TESES_R = [
+    { n:'Dano moral sem comprovação de abalo',       p:'18%', b:'203 decisões' },
+    { n:'Lucros cessantes presumidos',               p:'22%', b:'88 decisões' },
+    { n:'Desconsideração da personalidade jurídica', p:'29%', b:'74 decisões' }
+  ];
+  var RESULTADOS = [
+    { vara:'12ª Vara Cível', local:'São Paulo · TJSP', juiz:'Juíza M. H. Vasconcelos', proc:'61%', base:'em 87 decisões',  tempo:'14 meses', w:[22,39,39], alerta:'' },
+    { vara:'3ª Vara Cível',  local:'São Paulo · TJSP', juiz:'Juiz R. T. Salles',       proc:'49%', base:'em 132 decisões', tempo:'19 meses', w:[15,34,51], alerta:'' },
+    { vara:'41ª Vara Cível', local:'São Paulo · TJSP', juiz:'Juiz P. A. Fontoura',     proc:'57%', base:'em 23 decisões',  tempo:'11 meses', w:[26,31,43], alerta:'Amostra pequena — interpretar com cautela' }
+  ];
+  var TREND = [54,56,53,57,58,60,57,59,62,60,63,61,64,62,65,63,66,68,65,67,69,66,68,70];
+  var FATURAS = [
+    { m:'Julho 2026', v:'R$ 149,00', s:'paga' },
+    { m:'Junho 2026', v:'R$ 149,00', s:'paga' },
+    { m:'Maio 2026',  v:'R$ 149,00', s:'paga' }
+  ];
+  var PLANOS = {
+    'Básico':        { preco:'R$ 109/mês', areas:1, consultas:60 },
+    'Intermediário': { preco:'R$ 149/mês', areas:3, consultas:200 },
+    'Avançado':      { preco:'R$ 199/mês', areas:8, consultas:Infinity }
+  };
+
+  /* ================= Estado ================= */
+  var CHAVE = 'teseai.painel';
+  var estado = {
+    tela:'areas', plano:'Intermediário', area:null,
+    processos:PROCESSOS.slice(), temProcessos:false,
+    consultasUsadas:148, bannerDispensado:false,
+    filtro:'', menuAberto:false,
+    importando:false, buscando:false, respondendo:false,
+    mensagens:[
+      { tipo:'u', texto:'Como a juíza da 12ª Vara Cível costuma decidir dano moral em telefonia?' },
+      { tipo:'a',
+        texto:'Nos últimos 24 meses, a juíza M. H. Vasconcelos julgou 87 ações com pedido de dano moral contra operadoras de telefonia. O pedido foi acolhido, total ou parcialmente, em 61% delas (53 decisões), com valor mediano de R$ 4.500. Quando há cobrança reiterada após o cancelamento, a taxa observada sobe para 74% (23 de 31 decisões).',
+        fontes:[
+          { cnj:'1002204-18.2024.8.26.0100', data:'14/03/2025', res:'Parcialmente procedente' },
+          { cnj:'1004981-02.2023.8.26.0100', data:'02/08/2024', res:'Procedente' },
+          { cnj:'1001173-49.2024.8.26.0100', data:'27/11/2024', res:'Improcedente' }
+        ],
+        nota:'Padrão observado em 87 decisões públicas da 12ª Vara Cível de São Paulo. Não constitui previsão de resultado.' }
+    ]
+  };
+
+  function salvar(){
+    try {
+      localStorage.setItem(CHAVE, JSON.stringify({
+        plano:estado.plano, area:estado.area,
+        temProcessos:estado.temProcessos, consultasUsadas:estado.consultasUsadas
+      }));
+    } catch(e) { /* modo privado: segue sem persistir */ }
+  }
+  function carregar(){
+    var q = null;
+    try { q = new URLSearchParams(window.location.search); } catch(e) {}
+    try {
+      var s = JSON.parse(localStorage.getItem(CHAVE) || '{}');
+      if (PLANOS[s.plano]) estado.plano = s.plano;
+      if (s.area) estado.area = s.area;
+      if (s.temProcessos) estado.temProcessos = true;
+      if (typeof s.consultasUsadas === 'number') estado.consultasUsadas = s.consultasUsadas;
+    } catch(e) {}
+    // ?plano= vindo do login/cadastro tem prioridade
+    var mapa = { basico:'Básico', intermediario:'Intermediário', avancado:'Avançado' };
+    var p = q && q.get('plano');
+    if (p && mapa[p]) { estado.plano = mapa[p]; }
+    if (q && q.get('tela')) estado.tela = q.get('tela');
+  }
+
+  /* ================= Utilidades ================= */
+  var $  = function(s, r){ return (r||document).querySelector(s); };
+  var $$ = function(s, r){ return Array.prototype.slice.call((r||document).querySelectorAll(s)); };
+  function el(tag, cls, txt){ var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+  function limpar(n){ while (n.firstChild) n.removeChild(n.firstChild); }
+  function limiteAtingido(){ return estado.consultasUsadas >= PLANOS[estado.plano].consultas; }
+
+  var NAV = [['Visão geral','home'],['Processos','processos'],['Juízes','juiz'],['Pesquisa de padrões','pesquisa'],['Assistente','assistente'],['Plano e conta','conta']];
+  var TELAS = ['home','processos','juiz','pesquisa','assistente','conta'];
+
+  /* ================= Navegação ================= */
+  function irPara(tela){
+    estado.tela = tela;
+    estado.menuAberto = false;
+    if (tela !== 'areas') salvar();
+    render();
+    window.scrollTo({ top:0, behavior:'instant' in window ? 'instant' : 'auto' });
+  }
+
+  function montarNav(container){
+    limpar(container);
+    NAV.forEach(function(par){
+      var b = el('button', 'nav-item' + (estado.tela === par[1] ? ' ativo' : ''), par[0]);
+      b.addEventListener('click', function(){ irPara(par[1]); });
+      container.appendChild(b);
+    });
+  }
+
+  /* ================= Seleção de área ================= */
+  function montarAreas(){
+    var n = PLANOS[estado.plano].areas;
+    var g = $('#grade-areas');
+    limpar(g);
+    AREAS.slice(0, n).forEach(function(a){
+      var c = el('button', 'area');
+      c.appendChild(el('h3', null, a.nome));
+      c.appendChild(el('p', null, a.desc));
+      c.appendChild(el('span', 'ir', 'Selecionar →'));
+      c.addEventListener('click', function(){
+        estado.area = a.nome;
+        salvar();
+        irPara('home');
+      });
+      g.appendChild(c);
+    });
+    AREAS.slice(n).forEach(function(a, i){
+      var c = el('div', 'area-bloq');
+      c.appendChild(el('h3', null, a.nome));
+      c.appendChild(el('p', null, a.desc));
+      c.appendChild(el('span', 'selo', estado.plano === 'Básico' && i < 2 ? 'Requer Intermediário' : 'Requer Avançado'));
+      g.appendChild(c);
+    });
+    $('#selo-plano').textContent = 'Plano ' + estado.plano;
+    $('#areas-eyebrow').textContent = estado.area ? 'Trocar de área' : 'Primeiro acesso';
+    $('#linha-upgrade').hidden = estado.plano === 'Avançado';
+  }
+
+  /* ================= Linhas de processo ================= */
+  function linhaProcesso(p){
+    var l = el('button', 'linha-proc');
+
+    l.appendChild(el('span', 'cnj', p.cnj));
+    l.appendChild(el('span', null, p.cliente)).style.cssText = 'font-size:13.5px;color:var(--ink)';
+
+    var vj = el('span');
+    var v1 = el('span', null, p.vara); v1.style.cssText = 'display:block;font-size:13.5px;color:var(--ink)';
+    var v2 = el('span', null, p.juiz); v2.style.cssText = 'display:block;font-size:12px;color:var(--ink-6);margin-top:1px';
+    vj.appendChild(v1); vj.appendChild(v2);
+    l.appendChild(vj);
+
+    l.appendChild(el('span', 'fase', p.fase));
+
+    var pz = el('span');
+    var p1 = el('span', null, p.prazo);    p1.style.cssText = 'display:block;font-size:13px;font-weight:600;color:' + p.prazoCor;
+    var p2 = el('span', null, p.prazoRel); p2.style.cssText = 'display:block;font-size:11.5px;color:var(--ink-6);margin-top:1px';
+    pz.appendChild(p1); pz.appendChild(p2);
+    l.appendChild(pz);
+
+    var pd = el('span'); pd.style.cssText = 'display:flex;align-items:center;gap:9px';
+    var bola = el('span'); bola.style.cssText = 'width:8px;height:8px;border-radius:99px;flex-shrink:0;background:' + p.padCor;
+    var txt = el('span');
+    var t1 = el('span', null, p.pad);    t1.style.cssText = 'display:block;font-size:13px;font-weight:600;color:' + p.padCor;
+    var t2 = el('span', null, p.padSub); t2.style.cssText = 'display:block;font-size:11.5px;color:var(--ink-6);margin-top:1px';
+    txt.appendChild(t1); txt.appendChild(t2);
+    pd.appendChild(bola); pd.appendChild(txt);
+    l.appendChild(pd);
+
+    l.addEventListener('click', function(){
+      $('#juiz-nome').textContent = p.juiz;
+      $('#juiz-vara').textContent = p.vara.replace(' · ', ' · Comarca de ') + ' · TJSP';
+      irPara('juiz');
+    });
+    return l;
+  }
+
+  function processosFiltrados(){
+    var f = estado.filtro.trim().toLowerCase();
+    if (!f) return estado.processos;
+    return estado.processos.filter(function(p){
+      return (p.cnj + ' ' + p.cliente + ' ' + p.vara + ' ' + p.juiz).toLowerCase().indexOf(f) !== -1;
+    });
+  }
+
+  function montarTabela(container, lista, limite){
+    limpar(container);
+    if (!lista.length) {
+      container.appendChild(el('div', 'vazio-busca', 'Nenhum processo corresponde a "' + estado.filtro + '".'));
+      return;
+    }
+    (limite ? lista.slice(0, limite) : lista).forEach(function(p){ container.appendChild(linhaProcesso(p)); });
+  }
+
+  /* ================= Importação por CNJ ================= */
+  var RE_CNJ = /^\d{7}-?\d{2}\.?\d{4}\.?\d\.?\d{2}\.?\d{4}$/;
+
+  function importar(idInput){
+    if (estado.importando) return;
+    var input = document.getElementById(idInput);
+    var erro = document.getElementById('erro-' + idInput);
+    var valor = input.value.trim();
+
+    if (!valor) { if (erro) erro.textContent = 'Informe o número CNJ do processo.'; input.focus(); return; }
+    if (!RE_CNJ.test(valor)) { if (erro) erro.textContent = 'Número CNJ inválido. Use o formato 0000000-00.0000.8.26.0000.'; input.focus(); return; }
+    if (erro) erro.textContent = '';
+
+    estado.importando = true;
+    $('#proc-vazio').hidden = true;
+    $('#proc-lista').hidden = true;
+    $('#proc-carregando').hidden = false;
+
+    setTimeout(function(){
+      estado.processos.unshift({
+        cnj:valor, cliente:'Novo cliente', vara:'12ª Vara Cível · São Paulo', juiz:'Juíza M. H. Vasconcelos',
+        fase:'Inicial', prazo:'—', prazoRel:'monitorando prazos', prazoCor:'#16273F',
+        pad:'Favorável', padSub:'61% · 87 decisões', padCor:FAV
+      });
+      estado.temProcessos = true;
+      estado.importando = false;
+      input.value = '';
+      salvar();
+      render();
+      $('#aviso-importado').hidden = false;
+    }, 1700);
+  }
+
+  /* ================= Pesquisa de padrões ================= */
+  function buscar(){
+    if (estado.buscando) return;
+    if (limiteAtingido()) { irPara('conta'); return; }
+
+    estado.buscando = true;
+    $('#pesq-carregando').hidden = false;
+    $('#pesq-resultados').hidden = true;
+
+    setTimeout(function(){
+      estado.consultasUsadas++;
+      estado.buscando = false;
+      salvar();
+      $('#pesq-recorte').textContent = $('#f-demanda').value + ' · Comarca de ' + $('#f-comarca').value;
+      $('#pesq-periodo').textContent = $('#f-periodo').value.toLowerCase();
+      render();
+    }, 1500);
+  }
+
+  function montarResultados(){
+    var c = $('#pesq-cards');
+    limpar(c);
+    RESULTADOS.forEach(function(r){
+      var card = el('div', 'cx');
+      card.style.cssText = 'padding:20px;display:flex;flex-direction:column;gap:4px';
+      card.appendChild(el('h3', 'bloco', r.vara)).style.fontSize = '19px';
+      card.appendChild(el('div', 'sub', r.juiz + ' · ' + r.local)).style.fontSize = '12.5px';
+
+      var lin = el('div'); lin.style.cssText = 'display:flex;align-items:baseline;gap:8px;margin-top:12px';
+      var n = el('span', 'num', r.proc); n.style.fontSize = '32px';
+      lin.appendChild(n); lin.appendChild(el('span', 'sub', r.base));
+      card.appendChild(lin);
+
+      var barra = el('div'); barra.style.cssText = 'height:8px;border-radius:99px;overflow:hidden;display:flex;margin-top:8px';
+      ['#D4B87E','#C2A166','#3E4E66'].forEach(function(cor, i){
+        var s = el('div'); s.style.cssText = 'background:' + cor + ';width:' + r.w[i] + '%'; barra.appendChild(s);
+      });
+      card.appendChild(barra);
+
+      var t = el('div'); t.style.cssText = 'font-size:12.5px;color:var(--ink-4);margin-top:10px';
+      t.appendChild(document.createTextNode('Tempo médio até a sentença: '));
+      var forte = el('strong', null, r.tempo); forte.style.cssText = 'font-weight:600;color:var(--ink-2)';
+      t.appendChild(forte);
+      card.appendChild(t);
+
+      if (r.alerta) {
+        var a = el('div', null, r.alerta);
+        a.style.cssText = 'margin-top:8px;font-size:11.5px;color:var(--gold-deep);background:rgba(194,161,102,.1);border:1px solid rgba(178,138,68,.35);border-radius:5px;padding:6px 10px';
+        card.appendChild(a);
+      }
+
+      var b = el('button', 'btn-txt', 'Ver perfil completo →');
+      b.style.cssText = 'align-self:flex-start;margin-top:12px';
+      b.addEventListener('click', function(){
+        $('#juiz-nome').textContent = r.juiz;
+        $('#juiz-vara').textContent = r.vara + ' · Comarca de ' + r.local;
+        irPara('juiz');
+      });
+      card.appendChild(b);
+      c.appendChild(card);
+    });
+  }
+
+  /* ================= Assistente ================= */
+  function montarChat(){
+    var c = $('#chat');
+    limpar(c);
+    estado.mensagens.forEach(function(m){
+      if (m.tipo === 'u') { c.appendChild(el('div', 'msg-user', m.texto)); return; }
+      var d = el('div', 'msg-ia');
+      d.appendChild(el('p', null, m.texto));
+      if (m.fontes && m.fontes.length) {
+        var f = el('div', 'fontes');
+        f.appendChild(el('div', 'rotulo', 'Decisões-fonte')).style.marginBottom = '8px';
+        var lista = el('div'); lista.style.cssText = 'display:flex;flex-direction:column;gap:7px';
+        m.fontes.forEach(function(fo){
+          var li = el('div', 'fonte');
+          li.appendChild(el('span', 'c', fo.cnj));
+          li.appendChild(el('span', 'd', fo.data));
+          li.appendChild(el('span', 'r', fo.res));
+          lista.appendChild(li);
+        });
+        f.appendChild(lista);
+        if (m.nota) {
+          var nota = el('div', null, m.nota);
+          nota.style.cssText = 'font-size:11.5px;color:var(--ink-6);margin-top:10px;font-style:italic';
+          f.appendChild(nota);
+        }
+        d.appendChild(f);
+      }
+      c.appendChild(d);
+    });
+    if (estado.respondendo) {
+      var carregando = el('div', 'digitando');
+      var pts = el('span', 'pontos'); pts.appendChild(el('i')); pts.appendChild(el('i')); pts.appendChild(el('i'));
+      carregando.appendChild(pts);
+      carregando.appendChild(el('span', null, 'IA analisando decisões…')).style.cssText = 'font-size:13.5px;color:var(--ink-4)';
+      c.appendChild(carregando);
+    }
+  }
+
+  function perguntar(){
+    var input = $('#assist-input');
+    var q = input.value.trim();
+    if (!q || estado.respondendo) return;
+
+    estado.mensagens.push({ tipo:'u', texto:q });
+    input.value = '';
+    estado.respondendo = true;
+    montarChat();
+    $('#chat').lastChild.scrollIntoView({ block:'nearest' });
+
+    setTimeout(function(){
+      estado.mensagens.push({
+        tipo:'a',
+        texto:'No recorte da sua área, identifiquei 132 decisões sobre esse tema nos últimos 24 meses. O pedido foi acolhido, total ou parcialmente, em 57% delas (75 decisões), com tempo mediano de 13 meses até a sentença. Posso detalhar por juízo, por tese ou por período.',
+        fontes:[
+          { cnj:'1017442-08.2025.8.26.0100', data:'09/02/2026', res:'Procedente' },
+          { cnj:'1009318-64.2025.8.26.0002', data:'21/10/2025', res:'Parcialmente procedente' }
+        ],
+        nota:'Padrão observado em 132 decisões públicas. Não constitui previsão de resultado.'
+      });
+      estado.respondendo = false;
+      montarChat();
+      $('#chat').lastChild.scrollIntoView({ block:'nearest' });
+    }, 1700);
+  }
+
+  /* ================= Blocos estáticos por dados ================= */
+  function montarBarras(container, itens, cor, sufixo){
+    limpar(container);
+    itens.forEach(function(d){
+      var w = d.v || d.p;
+      var bloco = el('div');
+      var lin = el('div', 'barra-linha');
+      lin.appendChild(el('span', null, d.n));
+      var val = el('span', 'barra-val', w + ' · ' + d.b);
+      if (cor) val.style.color = cor;
+      lin.appendChild(val);
+      bloco.appendChild(lin);
+      var tr = el('div', 'trilho');
+      if (sufixo) tr.style.height = sufixo;
+      var i = el('i'); i.style.width = w; if (cor) i.style.background = cor;
+      tr.appendChild(i);
+      bloco.appendChild(tr);
+      container.appendChild(bloco);
+    });
+  }
+
+  function montarTendencia(){
+    var t = $('#juiz-trend');
+    limpar(t);
+    TREND.forEach(function(v, i){
+      var b = el('i');
+      b.style.height = Math.round((v - 40) * 3) + 'px';
+      b.style.background = i < 12 ? 'rgba(194,161,102,.42)' : '#C2A166';
+      t.appendChild(b);
+    });
+  }
+
+  function montarConta(){
+    var p = PLANOS[estado.plano];
+    $('#conta-plano').textContent = estado.plano;
+    $('#conta-preco').textContent = p.preco;
+
+    var tags = $('#conta-areas');
+    limpar(tags);
+    AREAS.slice(0, p.areas).forEach(function(a){
+      tags.appendChild(el('span', 'tag' + (a.nome === estado.area ? ' tag-gold' : ''), a.nome));
+    });
+
+    var ilimitado = p.consultas === Infinity;
+    $('#uso-consultas').textContent = ilimitado
+      ? estado.consultasUsadas + ' consultas · ilimitado'
+      : estado.consultasUsadas + ' de ' + p.consultas + (limiteAtingido() ? ' · limite atingido' : '');
+    $('#uso-consultas').style.color = limiteAtingido() ? 'var(--gold-deep)' : 'var(--ink-5)';
+    $('#uso-consultas-barra').parentElement.hidden = ilimitado;
+    $('#uso-consultas-barra').style.width = ilimitado ? '0%' : Math.min(100, Math.round(estado.consultasUsadas / p.consultas * 100)) + '%';
+    $('#uso-areas').textContent = p.areas + ' de ' + p.areas;
+    $('#uso-processos').textContent = estado.processos.length + ' de 100';
+    $('#uso-processos-barra').style.width = Math.min(100, estado.processos.length) + '%';
+
+    $('#banner-limite-t').textContent = ilimitado ? 'Consultas ilimitadas neste plano.' : 'Você usou as ' + p.consultas + ' consultas do ciclo.';
+    $('#banner-limite').hidden = !limiteAtingido() || estado.bannerDispensado;
+
+    var f = $('#faturas');
+    limpar(f);
+    FATURAS.forEach(function(fa, i){
+      var lin = el('div');
+      lin.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0' +
+        (i < FATURAS.length - 1 ? ';border-bottom:1px solid var(--linha-2)' : '');
+      lin.appendChild(el('span', null, fa.m + ' · ' + fa.v + ' · ' + fa.s)).style.cssText = 'font-size:13.5px;color:var(--ink-2)';
+      lin.appendChild(el('button', 'btn-txt', 'PDF')).style.fontSize = '12.5px';
+      f.appendChild(lin);
+    });
+  }
+
+  /* ================= Render ================= */
+  function render(){
+    var naAreas = estado.tela === 'areas';
+    $('#tela-areas').hidden = !naAreas;
+    $('#app').hidden = naAreas;
+    if (naAreas) { montarAreas(); return; }
+
+    var areaNome = estado.area || AREAS[0].nome;
+    $$('[data-area-nome]').forEach(function(n){ n.textContent = areaNome; });
+    $('#kpi-area').textContent = 'área do ' + areaNome + ' · há 2 dias';
+
+    montarNav($('#nav-desktop'));
+    montarNav($('#nav-mobile'));
+
+    TELAS.forEach(function(t){ $('#tela-' + t).hidden = estado.tela !== t; });
+
+    $('#menu-mobile').classList.toggle('aberto', estado.menuAberto);
+    $('#btn-menu').setAttribute('aria-expanded', estado.menuAberto ? 'true' : 'false');
+    $('#btn-menu-txt').textContent = estado.menuAberto ? 'Fechar' : 'Menu';
+
+    var pill = $('#pill-limite');
+    pill.hidden = !limiteAtingido();
+    pill.textContent = limiteAtingido() ? 'Consultas ' + estado.consultasUsadas + '/' + PLANOS[estado.plano].consultas : '';
+
+    // Visão geral
+    var lista = processosFiltrados();
+    montarTabela($('#home-linhas'), lista, 7);
+    $('#kpi-processos').textContent = estado.processos.length;
+    $('#home-contagem').textContent = estado.processos.length + ' ativos · atualizados há 2 horas';
+
+    // Processos
+    var carregandoProc = estado.importando;
+    $('#proc-carregando').hidden = !carregandoProc;
+    $('#proc-vazio').hidden = carregandoProc || estado.temProcessos;
+    $('#proc-lista').hidden = carregandoProc || !estado.temProcessos;
+    if (estado.temProcessos) montarTabela($('#proc-linhas'), lista);
+
+    // Perfil do juiz
+    montarBarras($('#juiz-demandas'), DEMANDAS, null);
+    montarBarras($('#teses-aceitas'), TESES_A, FAV, '5px');
+    montarBarras($('#teses-rejeitadas'), TESES_R, DES, '5px');
+    montarTendencia();
+
+    // Pesquisa
+    var carregandoPesq = estado.buscando;
+    $('#pesq-carregando').hidden = !carregandoPesq;
+    $('#pesq-resultados').hidden = carregandoPesq;
+    montarResultados();
+    $('#btn-buscar').disabled = limiteAtingido();
+    $('#aviso-consulta').textContent = limiteAtingido()
+      ? 'Limite de consultas do ciclo atingido — veja as opções em Plano e conta.'
+      : 'Cada busca consome 1 consulta do plano. Restam ' + (PLANOS[estado.plano].consultas === Infinity ? 'ilimitadas' : PLANOS[estado.plano].consultas - estado.consultasUsadas) + '.';
+
+    montarChat();
+    montarConta();
+  }
+
+  /* ================= Ligações ================= */
+  $$('[data-ir]').forEach(function(b){ b.addEventListener('click', function(){ irPara(b.getAttribute('data-ir')); }); });
+  $$('[data-importar]').forEach(function(b){ b.addEventListener('click', function(){ importar(b.getAttribute('data-importar')); }); });
+  $$('[data-sair]').forEach(function(b){
+    b.addEventListener('click', function(){
+      try { localStorage.removeItem(CHAVE); } catch(e) {}
+      window.location.href = 'login.html';
+    });
+  });
+  ['cnj-vazio','cnj-lista'].forEach(function(id){
+    var i = document.getElementById(id);
+    i.addEventListener('keydown', function(e){ if (e.key === 'Enter') importar(id); });
+    i.addEventListener('input', function(){
+      var erro = document.getElementById('erro-' + id);
+      if (erro) erro.textContent = '';
+    });
+  });
+  $('#btn-buscar').addEventListener('click', buscar);
+  $('#btn-perguntar').addEventListener('click', perguntar);
+  $('#assist-input').addEventListener('keydown', function(e){ if (e.key === 'Enter') perguntar(); });
+  $('#busca').addEventListener('input', function(){
+    estado.filtro = this.value;
+    montarTabela($('#home-linhas'), processosFiltrados(), 7);
+    if (estado.temProcessos) montarTabela($('#proc-linhas'), processosFiltrados());
+  });
+  $('#btn-menu').addEventListener('click', function(){ estado.menuAberto = !estado.menuAberto; render(); });
+  $('#banner-dispensar').addEventListener('click', function(){ estado.bannerDispensado = true; render(); });
+  $('#btn-exportar').addEventListener('click', function(){ window.print(); });
+  window.addEventListener('resize', function(){
+    if (window.innerWidth >= 960 && estado.menuAberto) { estado.menuAberto = false; render(); }
+  });
+
+  /* ================= Início ================= */
+  carregar();
+  if (estado.area && estado.tela === 'areas') estado.tela = 'home';
+  try {
+    $('#data-hoje').textContent = new Date().toLocaleDateString('pt-BR', { weekday:'long', day:'2-digit', month:'long', year:'numeric' });
+  } catch(e) { $('#data-hoje').textContent = ''; }
+  render();
+})();
+</script>
+</body>
+</html>
