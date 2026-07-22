@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Entrar — Tese AI</title>
+<meta name="description" content="Acesse seu painel de jurimetria na Tese AI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-900:#060D1A; --navy-800:#081221; --navy-700:#0A1526; --navy-600:#0C1930; --navy-500:#0E1D33;
+    --gold:#C2A166; --gold-hi:#D4B87E; --gold-soft:#D3B57C; --gold-ink:#9A7A3A; --gold-line:#B98A44;
+    --cream:#F6F3EC; --card:#FCFBF7;
+    --ink:#16273F; --ink-2:#2C3E58; --ink-3:#45566E; --ink-4:#52627A; --ink-5:#8290A3;
+    --on-dark:#F6F3EC; --on-dark-2:#B9C4D4; --on-dark-3:#8A97AB; --on-dark-4:#7E8CA0;
+    --danger:#B4442F;
+    --mono:'IBM Plex Mono',ui-monospace,monospace;
+    --serif:'Newsreader',Georgia,serif;
+    --sans:'Public Sans',-apple-system,'Segoe UI',sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--cream);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  ::selection{background:var(--gold);color:#0A1524}
+  a{color:var(--gold-ink)}
+  :focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:3px}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  @keyframes growBar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+  .shell{min-height:100vh;min-height:100dvh;display:grid;grid-template-columns:1.02fr 1fr}
+
+  /* ---------- Painel de marca (esquerda) ---------- */
+  .brandside{
+    background:linear-gradient(180deg,var(--navy-600) 0%,var(--navy-700) 55%,var(--navy-800) 100%);
+    color:var(--on-dark);border-right:1px solid rgba(203,173,114,.18);
+    padding:clamp(32px,4vw,52px) clamp(28px,4.5vw,64px);
+    display:flex;flex-direction:column;justify-content:space-between;gap:40px;position:relative;overflow:hidden
+  }
+  .logo{display:inline-flex;align-items:center;gap:10px;color:var(--on-dark);text-decoration:none;width:fit-content}
+  .logo-bars{display:flex;align-items:flex-end;gap:2.5px;height:18px}
+  .logo-bars i{width:4px;background:var(--gold);border-radius:1px;display:block}
+  .logo-bars i:nth-child(1){height:9px}
+  .logo-bars i:nth-child(2){height:18px}
+  .logo-bars i:nth-child(3){height:13px}
+  .logo-name{font-family:var(--serif);font-size:22px;font-weight:600;letter-spacing:.01em}
+  .logo-name span{color:var(--gold)}
+
+  .eyebrow{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#C9AC6F}
+  .eyebrow::before{content:"";width:28px;height:1px;background:var(--gold)}
+  .brand-copy h1{font-family:var(--serif);font-weight:500;font-size:clamp(30px,3.1vw,42px);line-height:1.1;letter-spacing:-.01em;margin:20px 0 16px;text-wrap:balance}
+  .brand-copy h1 em{font-style:normal;color:var(--gold-soft)}
+  .brand-copy p{font-size:16px;line-height:1.65;color:var(--on-dark-2);margin:0;max-width:46ch;text-wrap:pretty}
+
+  .minicard{
+    margin-top:clamp(28px,3.5vw,40px);background:var(--navy-500);border:1px solid rgba(203,173,114,.24);
+    border-radius:10px;box-shadow:0 30px 80px rgba(2,8,20,.55);overflow:hidden;max-width:430px;
+    animation:fadeUp .7s .1s ease-out both
+  }
+  .minicard-top{padding:13px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:1px solid rgba(246,243,236,.07)}
+  .minicard-top .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--on-dark-3)}
+  .minicard-top .tag{font-family:var(--mono);font-size:10px;color:#C9AC6F;border:1px solid rgba(203,173,114,.35);padding:3px 9px;border-radius:99px}
+  .minicard-body{padding:16px 18px 18px}
+  .minicard-body .cap{font-size:12.5px;color:var(--on-dark-3)}
+  .stat{display:flex;align-items:baseline;gap:10px;margin-top:4px}
+  .stat b{font-family:var(--serif);font-weight:500;font-size:40px;line-height:1;color:var(--on-dark)}
+  .stat span{font-size:12px;color:var(--on-dark-4)}
+  .bars{margin-top:16px;display:flex;flex-direction:column;gap:10px}
+  .bar-head{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:6px}
+  .bar-head span:first-child{color:#C7D1DE}
+  .bar-head span:last-child{font-family:var(--mono);color:var(--gold-soft)}
+  .bar-head.muted span:last-child{color:var(--on-dark-3)}
+  .track{height:6px;border-radius:99px;background:rgba(246,243,236,.09);overflow:hidden}
+  .track i{display:block;height:100%;border-radius:99px;background:var(--gold);transform-origin:left;animation:growBar .9s .3s cubic-bezier(.2,.7,.3,1) both}
+  .track i.dim{background:#46586F}
+
+  .brand-foot{font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;color:var(--on-dark-4);line-height:1.9}
+
+  /* ---------- Painel do formulário (direita) ---------- */
+  .formside{display:flex;flex-direction:column;padding:clamp(28px,4vw,52px) clamp(20px,5vw,56px)}
+  .formside-top{display:flex;justify-content:flex-end;font-size:13.5px;color:var(--ink-4)}
+  .formside-top a{color:var(--gold-ink);font-weight:600;text-decoration:none}
+  .formside-top a:hover{color:var(--gold-line)}
+  .formwrap{flex:1;display:flex;align-items:center;justify-content:center;padding:clamp(28px,4vw,44px) 0}
+  .form{width:100%;max-width:400px}
+  .form-eyebrow{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-ink)}
+  .form-eyebrow::before{content:"";width:26px;height:1px;background:var(--gold-line)}
+  .form h2{font-family:var(--serif);font-weight:500;font-size:clamp(28px,3.2vw,36px);line-height:1.16;letter-spacing:-.01em;margin:16px 0 8px}
+  .form .sub{font-size:15px;line-height:1.6;color:var(--ink-4);margin:0 0 30px}
+
+  .field{margin-bottom:18px}
+  .field label{display:block;font-size:13px;font-weight:600;color:var(--ink-2);margin-bottom:7px}
+  .control{position:relative;display:flex;align-items:center}
+  input[type=email],input[type=password],input[type=text]{
+    width:100%;font-family:inherit;font-size:15px;color:var(--ink);background:var(--card);
+    border:1px solid rgba(19,35,58,.22);border-radius:6px;padding:13px 14px;transition:border-color .2s,box-shadow .2s
+  }
+  input::placeholder{color:#9AA6B7}
+  input:hover{border-color:rgba(19,35,58,.34)}
+  input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(194,161,102,.22)}
+  input[aria-invalid=true]{border-color:var(--danger);box-shadow:0 0 0 3px rgba(180,68,47,.14)}
+  .control.has-toggle input{padding-right:74px}
+  .toggle{
+    position:absolute;right:8px;background:none;border:none;cursor:pointer;font-family:var(--mono);
+    font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-5);padding:6px 6px;border-radius:4px;transition:color .2s
+  }
+  .toggle:hover{color:var(--gold-ink)}
+  .err{display:block;min-height:0;font-size:12.5px;color:var(--danger);margin-top:6px}
+  .err:empty{display:none}
+
+  .label-row{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:7px}
+  .label-row label{margin:0}
+  .label-row a{font-size:12.5px;color:var(--gold-ink);text-decoration:none;font-weight:600}
+  .label-row a:hover{color:var(--gold-line)}
+
+  .remember{display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--ink-3);cursor:pointer;user-select:none;margin:4px 0 24px}
+  .remember input{width:16px;height:16px;accent-color:var(--gold);cursor:pointer;margin:0}
+
+  .btn{
+    width:100%;font-family:inherit;font-weight:600;font-size:15px;padding:14px 18px;border-radius:6px;
+    cursor:pointer;border:none;display:inline-flex;align-items:center;justify-content:center;gap:10px;transition:background .2s,border-color .2s,transform .2s
+  }
+  .btn-primary{background:var(--gold);color:#0A1524}
+  .btn-primary:hover:not(:disabled){background:var(--gold-hi);transform:translateY(-1px)}
+  .btn-primary:disabled{opacity:.62;cursor:progress;transform:none}
+  .btn-ghost{background:none;border:1px solid rgba(19,35,58,.28);color:var(--ink)}
+  .btn-ghost:hover{border-color:var(--ink);background:rgba(19,35,58,.04)}
+  .spinner{width:15px;height:15px;border:2px solid rgba(10,21,36,.28);border-top-color:#0A1524;border-radius:50%;animation:spin .7s linear infinite}
+
+  .divider{display:flex;align-items:center;gap:14px;margin:24px 0;font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-5)}
+  .divider::before,.divider::after{content:"";flex:1;height:1px;background:rgba(19,35,58,.13)}
+
+  .alert{
+    display:none;align-items:flex-start;gap:10px;font-size:13.5px;line-height:1.55;
+    border-radius:6px;padding:12px 14px;margin-bottom:22px
+  }
+  .alert.show{display:flex}
+  .alert-error{background:rgba(180,68,47,.08);border:1px solid rgba(180,68,47,.3);color:#8E3524}
+  .alert-ok{background:rgba(194,161,102,.12);border:1px solid rgba(194,161,102,.45);color:#6F5620}
+
+  .switch-note{font-size:14px;color:var(--ink-4);text-align:center;margin:26px 0 0}
+  .switch-note a{color:var(--gold-ink);font-weight:600;text-decoration:none}
+  .switch-note a:hover{color:var(--gold-line)}
+
+  .formside-foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;font-size:12px;color:var(--ink-5);padding-top:20px;border-top:1px solid rgba(19,35,58,.1)}
+  .formside-foot a{color:var(--ink-5);text-decoration:none}
+  .formside-foot a:hover{color:var(--ink-3)}
+
+  /* ---------- Etapa 2FA ---------- */
+  .step[hidden]{display:none}
+  .code-row{display:flex;gap:10px;margin:6px 0 4px}
+  .code-row input{
+    flex:1;min-width:0;text-align:center;font-family:var(--mono);font-size:20px;padding:14px 0;letter-spacing:0
+  }
+  .resend{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:22px 0 24px;font-size:13px;color:var(--ink-4)}
+  .linkbtn{background:none;border:none;padding:0;font-family:inherit;font-size:13px;font-weight:600;color:var(--gold-ink);cursor:pointer}
+  .linkbtn:hover{color:var(--gold-line)}
+  .linkbtn:disabled{color:var(--ink-5);cursor:default}
+
+  /* ---------- Responsivo ---------- */
+  @media (max-width:980px){
+    .shell{grid-template-columns:1fr}
+    .brandside{border-right:none;border-bottom:1px solid rgba(203,173,114,.18);padding:22px clamp(20px,5vw,40px) 30px;gap:24px}
+    .brand-copy h1{font-size:clamp(26px,6vw,32px);margin:16px 0 12px}
+    .brand-copy p{font-size:15px}
+    .minicard,.brand-foot{display:none}
+    .formside{padding:8px clamp(20px,5vw,40px) 28px}
+    .formwrap{padding:26px 0 34px;align-items:flex-start}
+    .formside-top{padding-top:18px}
+  }
+  @media (max-width:420px){
+    .code-row{gap:7px}
+    .code-row input{font-size:17px;padding:12px 0}
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ============ Marca ============ -->
+  <aside class="brandside">
+    <a class="logo" href="/">
+      <span class="logo-bars"><i></i><i></i><i></i></span>
+      <span class="logo-name">Tese <span>AI</span></span>
+    </a>
+
+    <div class="brand-copy">
+      <div class="eyebrow">Jurimetria para a advocacia</div>
+      <h1>Cada juiz tem um padrão.<br><em>Seu painel já sabe qual.</em></h1>
+      <p>Entre para consultar taxa de procedência, teses mais aceitas e tempo de tramitação — por juízo e por tipo de demanda.</p>
+
+      <div class="minicard" aria-hidden="true">
+        <div class="minicard-top">
+          <div class="lbl">Padrões de julgamento</div>
+          <div class="tag">Demonstração ilustrativa</div>
+        </div>
+        <div class="minicard-body">
+          <div class="cap">Taxa de procedência — total ou parcial</div>
+          <div class="stat"><b>64%</b><span>nas demandas semelhantes analisadas</span></div>
+          <div class="bars">
+            <div>
+              <div class="bar-head"><span>Procedente</span><span>18%</span></div>
+              <div class="track"><i style="width:18%"></i></div>
+            </div>
+            <div>
+              <div class="bar-head"><span>Parcialmente procedente</span><span>46%</span></div>
+              <div class="track"><i style="width:46%;animation-delay:.4s"></i></div>
+            </div>
+            <div>
+              <div class="bar-head muted"><span>Improcedente</span><span>36%</span></div>
+              <div class="track"><i class="dim" style="width:36%;animation-delay:.5s"></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="brand-foot">
+      Dados públicos&nbsp;&nbsp;·&nbsp;&nbsp;Conformidade com a LGPD<br>
+      Criptografia em trânsito e em repouso
+    </div>
+  </aside>
+
+  <!-- ============ Formulário ============ -->
+  <main class="formside">
+    <div class="formside-top">
+      <span>Ainda não tem conta?&nbsp;<a href="/#planos">Comece o teste de 7 dias</a></span>
+    </div>
+
+    <div class="formwrap">
+      <div class="form">
+
+        <!-- ---- Etapa 1: credenciais ---- -->
+        <section class="step" id="step-credenciais">
+          <div class="form-eyebrow">Acesso ao painel</div>
+          <h2>Entrar na Tese AI</h2>
+          <p class="sub">Use o e-mail cadastrado no seu escritório.</p>
+
+          <div class="alert alert-error" id="alerta-login" role="alert"></div>
+
+          <form id="form-login" novalidate>
+            <div class="field">
+              <label for="email">E-mail profissional</label>
+              <div class="control">
+                <input id="email" name="email" type="email" inputmode="email" autocomplete="username"
+                       placeholder="voce@escritorio.com.br" aria-describedby="erro-email" required>
+              </div>
+              <span class="err" id="erro-email" aria-live="polite"></span>
+            </div>
+
+            <div class="field">
+              <div class="label-row">
+                <label for="senha">Senha</label>
+                <a href="/recuperar-senha">Esqueci minha senha</a>
+              </div>
+              <div class="control has-toggle">
+                <input id="senha" name="senha" type="password" autocomplete="current-password"
+                       placeholder="••••••••" aria-describedby="erro-senha" required>
+                <button type="button" class="toggle" id="btn-ver-senha" aria-label="Mostrar senha">Mostrar</button>
+              </div>
+              <span class="err" id="erro-senha" aria-live="polite"></span>
+            </div>
+
+            <label class="remember">
+              <input type="checkbox" id="lembrar" name="lembrar" checked>
+              <span>Manter conectado neste dispositivo</span>
+            </label>
+
+            <button type="submit" class="btn btn-primary" id="btn-entrar">Entrar</button>
+
+            <div class="divider">ou</div>
+
+            <button type="button" class="btn btn-ghost" id="btn-google">
+              <svg width="17" height="17" viewBox="0 0 48 48" aria-hidden="true">
+                <path fill="#4285F4" d="M45.1 24.5c0-1.6-.1-3.2-.4-4.7H24v8.9h11.8c-.5 2.8-2 5.1-4.4 6.7v5.5h7.1c4.2-3.8 6.6-9.5 6.6-16.4z"/>
+                <path fill="#34A853" d="M24 46c5.9 0 10.9-2 14.5-5.3l-7.1-5.5c-2 1.3-4.5 2.1-7.4 2.1-5.7 0-10.6-3.8-12.3-9H4.4v5.7C8 41.3 15.4 46 24 46z"/>
+                <path fill="#FBBC05" d="M11.7 28.3c-.4-1.3-.7-2.7-.7-4.3s.3-3 .7-4.3v-5.7H4.4A22 22 0 0 0 2 24c0 3.6.9 6.9 2.4 9.9l7.3-5.6z"/>
+                <path fill="#EA4335" d="M24 10.6c3.2 0 6.1 1.1 8.4 3.3l6.3-6.3C34.9 4.1 29.9 2 24 2 15.4 2 8 6.7 4.4 13.7l7.3 5.7c1.7-5.2 6.6-8.8 12.3-8.8z"/>
+              </svg>
+              Entrar com Google
+            </button>
+
+            <p class="switch-note">Primeiro acesso do escritório? <a href="/#planos">Criar conta</a></p>
+          </form>
+        </section>
+
+        <!-- ---- Etapa 2: verificação em duas etapas ---- -->
+        <section class="step" id="step-2fa" hidden>
+          <div class="form-eyebrow">Verificação em duas etapas</div>
+          <h2>Confirme que é você</h2>
+          <p class="sub">Enviamos um código de 6 dígitos para <strong id="email-mascarado"></strong>.</p>
+
+          <div class="alert alert-error" id="alerta-2fa" role="alert"></div>
+          <div class="alert alert-ok" id="alerta-ok" role="status"></div>
+
+          <form id="form-2fa" novalidate>
+            <div class="field">
+              <label for="cod-1">Código de verificação</label>
+              <div class="code-row" id="code-row">
+                <input id="cod-1" type="text" inputmode="numeric" maxlength="1" autocomplete="one-time-code" aria-label="Dígito 1">
+                <input id="cod-2" type="text" inputmode="numeric" maxlength="1" aria-label="Dígito 2">
+                <input id="cod-3" type="text" inputmode="numeric" maxlength="1" aria-label="Dígito 3">
+                <input id="cod-4" type="text" inputmode="numeric" maxlength="1" aria-label="Dígito 4">
+                <input id="cod-5" type="text" inputmode="numeric" maxlength="1" aria-label="Dígito 5">
+                <input id="cod-6" type="text" inputmode="numeric" maxlength="1" aria-label="Dígito 6">
+              </div>
+              <span class="err" id="erro-codigo" aria-live="polite"></span>
+            </div>
+
+            <div class="resend">
+              <span id="contador">Não recebeu?</span>
+              <button type="button" class="linkbtn" id="btn-reenviar">Reenviar código</button>
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="btn-verificar">Verificar e entrar</button>
+            <p class="switch-note"><a href="#" id="btn-voltar">Usar outro e-mail</a></p>
+          </form>
+        </section>
+
+      </div>
+    </div>
+
+    <div class="formside-foot">
+      <span>© 2026 Tese AI Tecnologia Ltda.</span>
+      <span><a href="/termos">Termos de uso</a> · <a href="/privacidade">Privacidade</a> · <a href="mailto:contato@teseai.com.br">Suporte</a></span>
+    </div>
+  </main>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  // Enquanto não há backend, MODO_DEMO mantém o fluxo navegável sem sair da página.
+  // Com a API pronta: MODO_DEMO = false e implemente autenticar()/verificarCodigo().
+  var MODO_DEMO = true;
+  var REDIRECT_APOS_LOGIN = '/painel';
+
+  var $ = function(id){ return document.getElementById(id); };
+
+  var stepCred = $('step-credenciais');
+  var step2fa  = $('step-2fa');
+  var formLogin = $('form-login');
+  var form2fa = $('form-2fa');
+  var email = $('email'), senha = $('senha');
+  var erroEmail = $('erro-email'), erroSenha = $('erro-senha'), erroCodigo = $('erro-codigo');
+  var alertaLogin = $('alerta-login'), alerta2fa = $('alerta-2fa'), alertaOk = $('alerta-ok');
+  var btnEntrar = $('btn-entrar'), btnVerificar = $('btn-verificar');
+  var digitos = Array.prototype.slice.call(document.querySelectorAll('#code-row input'));
+
+  /* ---------- utilidades ---------- */
+  function marcarErro(input, span, msg){
+    input.setAttribute('aria-invalid', msg ? 'true' : 'false');
+    span.textContent = msg || '';
+    return !msg;
+  }
+  function mostrarAlerta(el, msg){
+    el.textContent = msg;
+    el.classList.toggle('show', !!msg);
+  }
+  function carregando(btn, ativo, rotulo){
+    btn.disabled = ativo;
+    btn.innerHTML = ativo ? '<span class="spinner"></span>Aguarde…' : rotulo;
+  }
+  function mascarar(valor){
+    var p = valor.split('@');
+    if (p.length !== 2) return valor;
+    var u = p[0];
+    var visivel = u.slice(0, Math.min(2, u.length));
+    return visivel + '•'.repeat(Math.max(u.length - 2, 3)) + '@' + p[1];
+  }
+
+  /* ---------- validação ---------- */
+  var RE_EMAIL = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
+
+  function validarEmail(){
+    var v = email.value.trim();
+    if (!v) return marcarErro(email, erroEmail, 'Informe seu e-mail.');
+    if (!RE_EMAIL.test(v)) return marcarErro(email, erroEmail, 'E-mail inválido. Verifique o endereço digitado.');
+    return marcarErro(email, erroEmail, '');
+  }
+  function validarSenha(){
+    if (!senha.value) return marcarErro(senha, erroSenha, 'Informe sua senha.');
+    if (senha.value.length < 8) return marcarErro(senha, erroSenha, 'A senha tem no mínimo 8 caracteres.');
+    return marcarErro(senha, erroSenha, '');
+  }
+  email.addEventListener('blur', validarEmail);
+  senha.addEventListener('blur', validarSenha);
+  email.addEventListener('input', function(){ if (email.getAttribute('aria-invalid') === 'true') validarEmail(); });
+  senha.addEventListener('input', function(){ if (senha.getAttribute('aria-invalid') === 'true') validarSenha(); });
+
+  /* ---------- mostrar/ocultar senha ---------- */
+  $('btn-ver-senha').addEventListener('click', function(){
+    var oculta = senha.type === 'password';
+    senha.type = oculta ? 'text' : 'password';
+    this.textContent = oculta ? 'Ocultar' : 'Mostrar';
+    this.setAttribute('aria-label', oculta ? 'Ocultar senha' : 'Mostrar senha');
+    senha.focus();
+  });
+
+  /* ---------- chamadas de API (stubs) ---------- */
+  function autenticar(dados){
+    if (MODO_DEMO) {
+      return new Promise(function(res){ setTimeout(function(){ res({ exige2fa: true }); }, 700); });
+    }
+    return fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      body: JSON.stringify(dados)
+    }).then(function(r){
+      if (r.status === 401) throw new Error('E-mail ou senha incorretos.');
+      if (!r.ok) throw new Error('Não foi possível entrar agora. Tente novamente em instantes.');
+      return r.json();
+    });
+  }
+
+  function verificarCodigo(codigo){
+    if (MODO_DEMO) {
+      return new Promise(function(res, rej){
+        setTimeout(function(){
+          codigo === '000000' ? rej(new Error('Código inválido ou expirado.')) : res({ ok: true });
+        }, 700);
+      });
+    }
+    return fetch('/api/auth/2fa', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      body: JSON.stringify({ codigo: codigo })
+    }).then(function(r){
+      if (!r.ok) throw new Error('Código inválido ou expirado.');
+      return r.json();
+    });
+  }
+
+  /* ---------- etapa 1 ---------- */
+  formLogin.addEventListener('submit', function(e){
+    e.preventDefault();
+    alertaLogin.className = 'alert alert-error';
+    mostrarAlerta(alertaLogin, '');
+    var okEmail = validarEmail(), okSenha = validarSenha();
+    if (!okEmail || !okSenha) { (okEmail ? senha : email).focus(); return; }
+
+    carregando(btnEntrar, true);
+    autenticar({
+      email: email.value.trim(),
+      senha: senha.value,
+      lembrar: $('lembrar').checked
+    }).then(function(res){
+      if (res && res.exige2fa) { irPara2fa(); }
+      else { concluir(); }
+    }).catch(function(err){
+      mostrarAlerta(alertaLogin, err.message || 'Não foi possível entrar. Tente novamente.');
+      senha.select();
+    }).then(function(){
+      carregando(btnEntrar, false, 'Entrar');
+    });
+  });
+
+  $('btn-google').addEventListener('click', function(){
+    if (MODO_DEMO) { mostrarAlerta(alertaLogin, 'Login com Google indisponível nesta prévia.'); return; }
+    window.location.href = '/api/auth/google';
+  });
+
+  /* ---------- etapa 2 (2FA) ---------- */
+  var timerId = null;
+
+  function irPara2fa(){
+    $('email-mascarado').textContent = mascarar(email.value.trim());
+    stepCred.hidden = true;
+    step2fa.hidden = false;
+    mostrarAlerta(alerta2fa, '');
+    mostrarAlerta(alertaOk, '');
+    digitos[0].focus();
+    iniciarContador(45);
+  }
+
+  function iniciarContador(seg){
+    var btn = $('btn-reenviar'), rotulo = $('contador');
+    btn.disabled = true;
+    clearInterval(timerId);
+    timerId = setInterval(function(){
+      seg--;
+      rotulo.textContent = 'Reenviar disponível em ' + seg + 's';
+      if (seg <= 0) {
+        clearInterval(timerId);
+        rotulo.textContent = 'Não recebeu?';
+        btn.disabled = false;
+      }
+    }, 1000);
+    rotulo.textContent = 'Reenviar disponível em ' + seg + 's';
+  }
+
+  digitos.forEach(function(campo, i){
+    campo.addEventListener('input', function(){
+      campo.value = campo.value.replace(/\D/g, '').slice(0, 1);
+      marcarErro(campo, erroCodigo, '');
+      if (campo.value && i < digitos.length - 1) digitos[i + 1].focus();
+    });
+    campo.addEventListener('keydown', function(e){
+      if (e.key === 'Backspace' && !campo.value && i > 0) digitos[i - 1].focus();
+      if (e.key === 'ArrowLeft' && i > 0) { e.preventDefault(); digitos[i - 1].focus(); }
+      if (e.key === 'ArrowRight' && i < digitos.length - 1) { e.preventDefault(); digitos[i + 1].focus(); }
+    });
+    campo.addEventListener('paste', function(e){
+      e.preventDefault();
+      var texto = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+      for (var j = 0; j < digitos.length - i && j < texto.length; j++) digitos[i + j].value = texto[j];
+      digitos[Math.min(i + texto.length, digitos.length - 1)].focus();
+    });
+  });
+
+  form2fa.addEventListener('submit', function(e){
+    e.preventDefault();
+    mostrarAlerta(alerta2fa, '');
+    var codigo = digitos.map(function(d){ return d.value; }).join('');
+    if (codigo.length < 6) {
+      erroCodigo.textContent = 'Digite os 6 dígitos do código.';
+      digitos[codigo.length].focus();
+      return;
+    }
+    erroCodigo.textContent = '';
+    carregando(btnVerificar, true);
+    verificarCodigo(codigo).then(function(){
+      concluir();
+    }).catch(function(err){
+      mostrarAlerta(alerta2fa, err.message || 'Código inválido.');
+      digitos.forEach(function(d){ d.value = ''; });
+      digitos[0].focus();
+    }).then(function(){
+      carregando(btnVerificar, false, 'Verificar e entrar');
+    });
+  });
+
+  $('btn-reenviar').addEventListener('click', function(){
+    mostrarAlerta(alertaOk, 'Novo código enviado. Ele expira em 10 minutos.');
+    iniciarContador(45);
+  });
+
+  $('btn-voltar').addEventListener('click', function(e){
+    e.preventDefault();
+    clearInterval(timerId);
+    digitos.forEach(function(d){ d.value = ''; });
+    step2fa.hidden = true;
+    stepCred.hidden = false;
+    email.focus();
+    email.select();
+  });
+
+  /* ---------- conclusão ---------- */
+  function concluir(){
+    clearInterval(timerId);
+    if (MODO_DEMO) {
+      step2fa.hidden = true;
+      stepCred.hidden = false;
+      mostrarAlerta(alertaLogin, '');
+      alertaLogin.className = 'alert alert-ok show';
+      alertaLogin.textContent = 'Autenticado. Nesta prévia não há painel — conecte a API para redirecionar.';
+      return;
+    }
+    window.location.href = REDIRECT_APOS_LOGIN;
+  }
+
+  email.focus();
+})();
+</script>
+</body>
+</html>
