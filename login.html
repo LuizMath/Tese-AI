@@ -234,7 +234,7 @@
   <!-- ============ Formulário ============ -->
   <main class="formside">
     <div class="formside-top">
-      <span>Ainda não tem conta?&nbsp;<a href="index.html#planos">Comece o teste de 7 dias</a></span>
+      <span>Ainda não tem conta?&nbsp;<a href="criar-conta.html">Comece o teste de 7 dias</a></span>
     </div>
 
     <div class="formwrap">
@@ -291,7 +291,7 @@
               Entrar com Google
             </button>
 
-            <p class="switch-note">Primeiro acesso do escritório? <a href="index.html#planos">Criar conta</a></p>
+            <p class="switch-note">Primeiro acesso do escritório? <a href="criar-conta.html">Criar conta</a></p>
           </form>
         </section>
 
@@ -345,7 +345,7 @@
   // Enquanto não há backend, MODO_DEMO mantém o fluxo navegável sem sair da página.
   // Com a API pronta: MODO_DEMO = false e implemente autenticar()/verificarCodigo().
   var MODO_DEMO = true;
-  var REDIRECT_APOS_LOGIN = '/painel';
+  var REDIRECT_APOS_LOGIN = 'painel.html';
 
   var $ = function(id){ return document.getElementById(id); };
 
@@ -576,15 +576,9 @@
   /* ---------- conclusão ---------- */
   function concluir(){
     clearInterval(timerId);
-    if (MODO_DEMO) {
-      step2fa.hidden = true;
-      stepCred.hidden = false;
-      mostrarAlerta(alertaLogin, '');
-      alertaLogin.className = 'alert alert-ok show';
-      alertaLogin.textContent = 'Autenticado. Nesta prévia não há painel — conecte a API para redirecionar.';
-      return;
-    }
-    window.location.href = REDIRECT_APOS_LOGIN;
+    var destino = REDIRECT_APOS_LOGIN;
+    if (planoEscolhido) destino += '?plano=' + planoEscolhido;
+    window.location.href = destino;
   }
 
   email.focus();
