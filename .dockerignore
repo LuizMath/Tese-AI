@@ -1,0 +1,9 @@
+.git
+.gitignore
+.dockerignore
+.claude
+LICENSE
+README.md
+fly.toml
+Dockerfile
+node_modules
