@@ -141,6 +141,12 @@
   .alert-error{background:rgba(180,68,47,.08);border:1px solid rgba(180,68,47,.3);color:#8E3524}
   .alert-ok{background:rgba(194,161,102,.12);border:1px solid rgba(194,161,102,.45);color:#6F5620}
 
+  .plano-tag{
+    display:none;align-items:center;gap:9px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--gold-ink);background:rgba(194,161,102,.12);
+    border:1px solid rgba(194,161,102,.42);border-radius:99px;padding:6px 13px;margin:0 0 20px
+  }
+  .plano-tag.show{display:inline-flex}
   .switch-note{font-size:14px;color:var(--ink-4);text-align:center;margin:26px 0 0}
   .switch-note a{color:var(--gold-ink);font-weight:600;text-decoration:none}
   .switch-note a:hover{color:var(--gold-line)}
@@ -183,7 +189,7 @@
 
   <!-- ============ Marca ============ -->
   <aside class="brandside">
-    <a class="logo" href="/">
+    <a class="logo" href="index.html">
       <span class="logo-bars"><i></i><i></i><i></i></span>
       <span class="logo-name">Tese <span>AI</span></span>
     </a>
@@ -228,7 +234,7 @@
   <!-- ============ Formulário ============ -->
   <main class="formside">
     <div class="formside-top">
-      <span>Ainda não tem conta?&nbsp;<a href="/#planos">Comece o teste de 7 dias</a></span>
+      <span>Ainda não tem conta?&nbsp;<a href="index.html#planos">Comece o teste de 7 dias</a></span>
     </div>
 
     <div class="formwrap">
@@ -240,6 +246,7 @@
           <h2>Entrar na Tese AI</h2>
           <p class="sub">Use o e-mail cadastrado no seu escritório.</p>
 
+          <div class="plano-tag" id="plano-tag"></div>
           <div class="alert alert-error" id="alerta-login" role="alert"></div>
 
           <form id="form-login" novalidate>
@@ -284,7 +291,7 @@
               Entrar com Google
             </button>
 
-            <p class="switch-note">Primeiro acesso do escritório? <a href="/#planos">Criar conta</a></p>
+            <p class="switch-note">Primeiro acesso do escritório? <a href="index.html#planos">Criar conta</a></p>
           </form>
         </section>
 
@@ -326,7 +333,7 @@
 
     <div class="formside-foot">
       <span>© 2026 Tese AI Tecnologia Ltda.</span>
-      <span><a href="/termos">Termos de uso</a> · <a href="/privacidade">Privacidade</a> · <a href="mailto:contato@teseai.com.br">Suporte</a></span>
+      <span><a href="#">Termos de uso</a> · <a href="#">Privacidade</a> · <a href="mailto:contato@teseai.com.br">Suporte</a></span>
     </div>
   </main>
 </div>
@@ -373,6 +380,19 @@
     var visivel = u.slice(0, Math.min(2, u.length));
     return visivel + '•'.repeat(Math.max(u.length - 2, 3)) + '@' + p[1];
   }
+
+  /* ---------- plano escolhido na landing (?plano=…) ---------- */
+  var PLANOS = { basico:'Básico', intermediario:'Intermediário', avancado:'Avançado' };
+  var planoEscolhido = null;
+  try {
+    var p = new URLSearchParams(window.location.search).get('plano');
+    if (p && PLANOS[p]) {
+      planoEscolhido = p;
+      var tag = $('plano-tag');
+      tag.textContent = 'Plano ' + PLANOS[p] + ' · 7 dias de teste';
+      tag.classList.add('show');
+    }
+  } catch (e) { /* navegador sem URLSearchParams: segue sem o destaque */ }
 
   /* ---------- validação ---------- */
   var RE_EMAIL = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
@@ -450,7 +470,8 @@
     autenticar({
       email: email.value.trim(),
       senha: senha.value,
-      lembrar: $('lembrar').checked
+      lembrar: $('lembrar').checked,
+      plano: planoEscolhido
     }).then(function(res){
       if (res && res.exige2fa) { irPara2fa(); }
       else { concluir(); }
