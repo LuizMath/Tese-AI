@@ -1,0 +1,8 @@
+# O container e Linux: arquivos precisam de quebra de linha LF.
+# Sem isto, o Git no Windows entrega CRLF e o nginx recusa a configuracao.
+* text=auto eol=lf
+
+*.html      text eol=lf
+Dockerfile  text eol=lf
+nginx.conf  text eol=lf
+fly.toml    text eol=lf
