@@ -299,7 +299,7 @@
         <section class="step" id="step-2fa" hidden>
           <div class="form-eyebrow">Verificação em duas etapas</div>
           <h2>Confirme que é você</h2>
-          <p class="sub">Enviamos um código de 6 dígitos para <strong id="email-mascarado"></strong>.</p>
+          <p class="sub">Abra seu aplicativo autenticador e digite o código de 6 dígitos da conta <strong id="email-mascarado"></strong>.</p>
 
           <div class="alert alert-error" id="alerta-2fa" role="alert"></div>
           <div class="alert alert-ok" id="alerta-ok" role="status"></div>
@@ -318,7 +318,8 @@
               <span class="err" id="erro-codigo" aria-live="polite"></span>
             </div>
 
-            <div class="resend">
+            <!-- Código TOTP renova sozinho no aplicativo; não há reenvio -->
+            <div class="resend" hidden>
               <span id="contador">Não recebeu?</span>
               <button type="button" class="linkbtn" id="btn-reenviar">Reenviar código</button>
             </div>
@@ -338,13 +339,13 @@
   </main>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="tese-supabase.js?v=1"></script>
 <script>
 (function(){
   'use strict';
 
-  // Enquanto não há backend, MODO_DEMO mantém o fluxo navegável sem sair da página.
-  // Com a API pronta: MODO_DEMO = false e implemente autenticar()/verificarCodigo().
-  var MODO_DEMO = true;
+  var sb = window.teseSupabase;
   var REDIRECT_APOS_LOGIN = 'painel.html';
 
   var $ = function(id){ return document.getElementById(id); };
@@ -422,39 +423,36 @@
     senha.focus();
   });
 
-  /* ---------- chamadas de API (stubs) ---------- */
+  /* ---------- autenticação (Supabase Auth) ---------- */
+  function traduzirErroLogin(erro){
+    var m = (erro && erro.message) || '';
+    if (/invalid login credentials/i.test(m)) return 'E-mail ou senha incorretos.';
+    if (/email not confirmed/i.test(m)) return 'Confirme seu e-mail antes de entrar — enviamos um link no cadastro.';
+    if (/too many|rate limit/i.test(m)) return 'Muitas tentativas. Aguarde alguns minutos e tente de novo.';
+    return 'Não foi possível entrar agora. Tente novamente em instantes.';
+  }
+
   function autenticar(dados){
-    if (MODO_DEMO) {
-      return new Promise(function(res){ setTimeout(function(){ res({ exige2fa: true }); }, 700); });
-    }
-    return fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'same-origin',
-      body: JSON.stringify(dados)
-    }).then(function(r){
-      if (r.status === 401) throw new Error('E-mail ou senha incorretos.');
-      if (!r.ok) throw new Error('Não foi possível entrar agora. Tente novamente em instantes.');
-      return r.json();
-    });
+    return sb.auth.signInWithPassword({ email: dados.email, password: dados.senha })
+      .then(function(r){
+        if (r.error) throw new Error(traduzirErroLogin(r.error));
+        return sb.auth.mfa.getAuthenticatorAssuranceLevel();
+      })
+      .then(function(r){
+        var d = (r && r.data) || {};
+        return { exige2fa: d.nextLevel === 'aal2' && d.nextLevel !== d.currentLevel };
+      });
   }
 
   function verificarCodigo(codigo){
-    if (MODO_DEMO) {
-      return new Promise(function(res, rej){
-        setTimeout(function(){
-          codigo === '000000' ? rej(new Error('Código inválido ou expirado.')) : res({ ok: true });
-        }, 700);
-      });
-    }
-    return fetch('/api/auth/2fa', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'same-origin',
-      body: JSON.stringify({ codigo: codigo })
+    return sb.auth.mfa.listFactors().then(function(r){
+      if (r.error) throw new Error('Não foi possível validar o código. Tente novamente.');
+      var fator = (r.data && r.data.totp && r.data.totp[0]) || null;
+      if (!fator) throw new Error('Nenhum aplicativo autenticador configurado nesta conta.');
+      return sb.auth.mfa.challengeAndVerify({ factorId: fator.id, code: codigo });
     }).then(function(r){
-      if (!r.ok) throw new Error('Código inválido ou expirado.');
-      return r.json();
+      if (r.error) throw new Error('Código inválido ou expirado.');
+      return { ok: true };
     });
   }
 
@@ -484,8 +482,12 @@
   });
 
   $('btn-google').addEventListener('click', function(){
-    if (MODO_DEMO) { mostrarAlerta(alertaLogin, 'Login com Google indisponível nesta prévia.'); return; }
-    window.location.href = '/api/auth/google';
+    sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin + '/painel.html' }
+    }).then(function(r){
+      if (r.error) mostrarAlerta(alertaLogin, 'Login com Google indisponível no momento.');
+    });
   });
 
   /* ---------- etapa 2 (2FA) ---------- */
@@ -498,7 +500,6 @@
     mostrarAlerta(alerta2fa, '');
     mostrarAlerta(alertaOk, '');
     digitos[0].focus();
-    iniciarContador(45);
   }
 
   function iniciarContador(seg){
@@ -580,6 +581,15 @@
     if (planoEscolhido) destino += '?plano=' + planoEscolhido;
     window.location.href = destino;
   }
+
+  // Sessão ativa (e sem pendência de 2FA): vai direto ao painel
+  sb.auth.getSession().then(function(r){
+    if (!(r.data && r.data.session)) return;
+    sb.auth.mfa.getAuthenticatorAssuranceLevel().then(function(a){
+      var d = (a && a.data) || {};
+      if (d.nextLevel !== 'aal2' || d.nextLevel === d.currentLevel) concluir();
+    });
+  });
 
   email.focus();
 })();
