@@ -544,9 +544,30 @@
   </main>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="tese-supabase.js?v=1"></script>
 <script>
 (function(){
   'use strict';
+
+  var sb = window.teseSupabase;
+
+  /* ============ Guarda de sessão ============ */
+  // Sem login, volta para a entrada. Com login, sincroniza o plano real
+  // gravado no banco (tabela perfil) com o estado do painel.
+  sb.auth.getSession().then(function(r){
+    var sessao = r.data && r.data.session;
+    if (!sessao) { window.location.replace('login.html'); return; }
+    sb.from('perfil').select('nome, plano ( nome )').eq('id', sessao.user.id).single()
+      .then(function(p){
+        var plano = p.data && p.data.plano && p.data.plano.nome;
+        if (plano && PLANOS[plano] && estado.plano !== plano) {
+          estado.plano = plano;
+          salvar();
+          render();
+        }
+      });
+  });
 
   /* =======================================================
      Dados de demonstração. Substituir pelas chamadas de API.
@@ -1060,7 +1081,7 @@
   $$('[data-sair]').forEach(function(b){
     b.addEventListener('click', function(){
       try { localStorage.removeItem(CHAVE); } catch(e) {}
-      window.location.href = 'login.html';
+      sb.auth.signOut().then(function(){ window.location.href = 'login.html'; });
     });
   });
   ['cnj-vazio','cnj-lista'].forEach(function(id){

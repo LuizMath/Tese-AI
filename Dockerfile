@@ -4,6 +4,7 @@ FROM nginx:1.27-alpine
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Todas as paginas do site — novas paginas entram sem editar este arquivo.
 COPY *.html /usr/share/nginx/html/
+COPY *.js /usr/share/nginx/html/
 
 EXPOSE 8080
 

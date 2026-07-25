@@ -132,6 +132,7 @@
   .alert{display:none;align-items:flex-start;gap:10px;font-size:13.5px;line-height:1.55;border-radius:6px;padding:12px 14px;margin-bottom:20px}
   .alert.show{display:flex}
   .alert-error{background:rgba(180,68,47,.08);border:1px solid rgba(180,68,47,.3);color:#8E3524}
+  .alert-ok{background:rgba(62,122,94,.1);border:1px solid rgba(62,122,94,.35);color:#2E5B46}
 
   .switch-note{font-size:14px;color:var(--ink-4);text-align:center;margin:22px 0 0}
   .switch-note a{color:var(--gold-ink);font-weight:600;text-decoration:none}
@@ -340,13 +341,13 @@
   </main>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="tese-supabase.js?v=1"></script>
 <script>
 (function(){
   'use strict';
 
-  // Sem backend ainda: MODO_DEMO mantém o fluxo navegável até o painel.
-  // Com a API pronta: MODO_DEMO = false e implemente criarConta().
-  var MODO_DEMO = true;
+  var sb = window.teseSupabase;
 
   var $ = function(id){ return document.getElementById(id); };
 
@@ -463,26 +464,37 @@
     senha.focus();
   });
 
-  /* ---------- chamada de API (stub) ---------- */
+  /* ---------- cadastro (Supabase Auth) ---------- */
+  // Os metadados viram o perfil no banco via trigger (nome, OAB, plano, área).
   function criarConta(dados){
-    if (MODO_DEMO) {
-      return new Promise(function(res){ setTimeout(function(){ res({ ok:true }); }, 900); });
-    }
-    return fetch('/api/auth/signup', {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json' },
-      credentials:'same-origin',
-      body:JSON.stringify(dados)
+    return sb.auth.signUp({
+      email: dados.email,
+      password: dados.senha,
+      options: {
+        data: { nome: dados.nome, oab: dados.oab, area: dados.area, plano: dados.plano },
+        emailRedirectTo: window.location.origin + '/login.html'
+      }
     }).then(function(r){
-      if (r.status === 409) throw new Error('Já existe uma conta com esse e-mail. Tente entrar.');
-      if (!r.ok) throw new Error('Não foi possível criar a conta agora. Tente novamente em instantes.');
-      return r.json();
+      if (r.error) {
+        var m = r.error.message || '';
+        if (/already registered/i.test(m)) throw new Error('Já existe uma conta com esse e-mail. Tente entrar.');
+        if (/password/i.test(m)) throw new Error('A senha não atende aos requisitos mínimos. Use ao menos 8 caracteres, com letras e números.');
+        if (/too many|rate limit/i.test(m)) throw new Error('Muitas tentativas. Aguarde alguns minutos e tente de novo.');
+        throw new Error('Não foi possível criar a conta agora. Tente novamente em instantes.');
+      }
+      // identities vazio = e-mail já cadastrado (o Supabase não revela por padrão)
+      var u = r.data && r.data.user;
+      if (u && u.identities && u.identities.length === 0) {
+        throw new Error('Já existe uma conta com esse e-mail. Tente entrar.');
+      }
+      return { sessao: !!(r.data && r.data.session) };
     });
   }
 
   /* ---------- envio ---------- */
   form.addEventListener('submit', function(e){
     e.preventDefault();
+    alerta.className = 'alert alert-error';
     mostrarAlerta('');
 
     var checks = [validarNome(), validarEmail(), validarOab(), validarSenha(), validarSenha2(), validarAceite()];
@@ -500,15 +512,25 @@
       area: $('area').value,
       senha: senha.value,
       plano: planoEscolhido()
-    }).then(function(){
-      // Primeiro acesso: o painel abre na seleção de área.
-      try {
-        localStorage.setItem('teseai.painel', JSON.stringify({
-          plano: { basico:'Básico', intermediario:'Intermediário', avancado:'Avançado' }[planoEscolhido()],
-          area: null, temProcessos: false, consultasUsadas: 0
-        }));
-      } catch (err) { /* modo privado: o painel usa os padrões */ }
-      window.location.href = 'painel.html?plano=' + planoEscolhido();
+    }).then(function(res){
+      if (res.sessao) {
+        // Confirmação de e-mail desativada: sessão já existe, painel direto.
+        // Primeiro acesso: o painel abre na seleção de área.
+        try {
+          localStorage.setItem('teseai.painel', JSON.stringify({
+            plano: { basico:'Básico', intermediario:'Intermediário', avancado:'Avançado' }[planoEscolhido()],
+            area: null, temProcessos: false, consultasUsadas: 0
+          }));
+        } catch (err) { /* modo privado: o painel usa os padrões */ }
+        window.location.href = 'painel.html?plano=' + planoEscolhido();
+        return;
+      }
+      // Confirmação de e-mail ativada: avisa e manda conferir a caixa de entrada.
+      carregando(false);
+      alerta.className = 'alert alert-ok show';
+      alerta.textContent = 'Conta criada! Enviamos um link de confirmação para ' + email.value.trim() +
+        '. Confirme o e-mail e depois entre pelo login.';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }).catch(function(err){
       mostrarAlerta(err.message || 'Não foi possível criar a conta.');
       carregando(false);
@@ -516,8 +538,12 @@
   });
 
   $('btn-google').addEventListener('click', function(){
-    if (MODO_DEMO) { mostrarAlerta('Cadastro com Google indisponível nesta prévia.'); return; }
-    window.location.href = '/api/auth/google?intent=signup';
+    sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin + '/painel.html' }
+    }).then(function(r){
+      if (r.error) { alerta.className = 'alert alert-error'; mostrarAlerta('Cadastro com Google indisponível no momento.'); }
+    });
   });
 
   pintarForca();
